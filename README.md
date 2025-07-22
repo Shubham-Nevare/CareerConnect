@@ -1,4 +1,4 @@
-<img width="1888" height="788" alt="image" src="https://github.com/user-attachments/assets/d7fc6258-a4c8-49f0-a0b0-5eb50a6c1e8c" /># CareerConnect
+# CareerConnect
 
 <img width="1888" height="788" alt="image" src="https://github.com/user-attachments/assets/9387128e-93b2-4445-a601-094c72bca68a" />
 
