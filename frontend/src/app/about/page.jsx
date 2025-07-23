@@ -44,11 +44,12 @@ export default function AboutPage() {
               </p>
             </div>
             <div className="bg-gray-100 rounded-lg overflow-hidden">
-              <div className="aspect-w-16 aspect-h-9">
+              <div className="h-64 w-full">
                 <img
-                  src="/Our Team Photo.jpg"
+                  src="/Our Team Photo5.avif"
                   alt="Our Team"
                   className="w-full h-full object-cover rounded-lg"
+                  style={{ height: '100%', width: '100%' }}
                 />
               </div>
             </div>

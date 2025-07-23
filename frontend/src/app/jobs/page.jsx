@@ -155,7 +155,7 @@ export default function JobsPage() {
         <div className="flex flex-col md:flex-row gap-8">
           {/* Desktop Filters */}
           <div className="hidden md:block w-64 flex-shrink-0">
-            <div className="bg-white rounded-lg shadow p-6 sticky top-8">
+            <div className="bg-white rounded-lg shadow p-6 sticky top-16">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-lg font-semibold">Filters</h2>
                 <button

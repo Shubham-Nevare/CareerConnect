@@ -44,7 +44,7 @@ export default function RootLayout({ children }) {
       <body className="bg-gray-50 min-h-screen flex flex-col">
         <AuthProvider>
           <Navbar />
-          <main className="flex-1 mx-auto w-full flex flex-col justify-center">
+          <main className="flex-1 mx-auto w-full flex flex-col justify-center mb-10">
             {children}
           </main>
          <Footer />

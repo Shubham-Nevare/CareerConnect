@@ -6,6 +6,7 @@ const multer = require('multer');
 const path = require('path');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Company = require('../models/Company');
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -23,6 +24,12 @@ router.post('/', async(req, res) => {
     try {
         const job = new Job(req.body);
         await job.save();
+        // After saving the job, add its _id to the corresponding company's jobs array
+        if (job.company) {
+            await Company.findByIdAndUpdate(
+                job.company, { $push: { jobs: job._id } }, { new: true }
+            );
+        }
         res.status(201).json(job);
     } catch (err) {
         res.status(400).json({ error: err.message });

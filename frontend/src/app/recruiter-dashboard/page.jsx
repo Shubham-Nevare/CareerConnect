@@ -15,6 +15,7 @@ import {
 } from "react-icons/fi";
 import { useAuth } from "../components/AuthProvider";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const statusColors = {
   applied: {
@@ -90,6 +91,7 @@ export default function RecruiterDashboard() {
   const [company, setCompany] = useState(null);
   const [totalUniqueCandidates, setTotalUniqueCandidates] = useState(0);
   const { token, user } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -312,16 +314,23 @@ export default function RecruiterDashboard() {
       }, [])
     : [];
 
-  const filteredApplicants = allApplicants.filter((applicant) => {
-    const matchesSearch =
-      (applicant.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (applicant.jobTitle || "")
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-    const matchesFilter =
-      activeFilter === "all" || applicant.status === activeFilter;
-    return matchesSearch && matchesFilter;
-  });
+  const filteredApplicants = allApplicants
+    .filter((applicant) => {
+      const matchesSearch =
+        (applicant.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (applicant.jobTitle || "")
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+      const matchesFilter =
+        activeFilter === "all" || applicant.status === activeFilter;
+      return matchesSearch && matchesFilter;
+    })
+    .sort((a, b) => {
+      // Sort by appliedDate descending (latest first)
+      const dateA = new Date(a.appliedDate || a.createdAt || 0);
+      const dateB = new Date(b.appliedDate || b.createdAt || 0);
+      return dateB - dateA;
+    });
 
   const activeJobs = jobs.filter((job) => job.status === "active").length;
   const closedJobs = jobs.filter((job) => job.status === "closed").length;
@@ -417,7 +426,10 @@ export default function RecruiterDashboard() {
         </div>
 
         {/*Your Total Candidates */}
-        <div className="p-4  bg-white md:p-0 md:pl-4 rounded-lg shadow-sm flex items-center cursor-pointer">
+        <div
+          className="p-4  bg-white md:p-0 md:pl-4 rounded-lg shadow-sm flex items-center cursor-pointer"
+          onClick={() => router.push("/recruiter-dashboard/candidates")}
+        >
           <div className="bg-indigo-100 p-3 rounded-full mr-4">
             <FiUserPlus className="text-indigo-500 text-2xl" />
           </div>
@@ -727,9 +739,9 @@ export default function RecruiterDashboard() {
                       >
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                           <div className="flex items-start space-x-4 flex-1">
-                          {console.log(applicant)}
+                          {/* {console.log(applicant)} */}
                             {`${process.env.NEXT_PUBLIC_API_URL}${applicant.userId.profilePhoto}` ? (
-                              <img src={`${process.env.NEXT_PUBLIC_API_URL}${applicant.userId.profilePhoto}`} alt={applicant.name} className="w-10 h-10 rounded-full object-cover" />
+                              <img src={`${process.env.NEXT_PUBLIC_API_URL}${applicant?.userId?.profilePhoto}`} alt={applicant.name} className="w-10 h-10 rounded-full object-cover" />
                             ) : (
                               <div className="bg-gray-200 rounded-full w-10 h-10 flex items-center justify-center text-gray-600">
                                 <FiUser className="text-lg" />

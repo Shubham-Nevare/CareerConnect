@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { 
   FiMail, 
   FiPhone, 
@@ -9,7 +9,8 @@ import {
   FiFile,
   FiDownload,
   FiBriefcase,
-  FiCalendar
+  FiCalendar,
+  FiArrowLeft
 } from "react-icons/fi";
 import { 
   FaLinkedin, 
@@ -20,6 +21,7 @@ import {
 import { useAuth } from "../../components/AuthProvider";
 
 export default function JobSeekerProfilePage() {
+  const router = useRouter();
   const { id } = useParams();
   const [user, setUser] = useState(null);
   const [showPdf, setShowPdf] = useState(false);
@@ -80,11 +82,22 @@ export default function JobSeekerProfilePage() {
     }
   };
 
+  // Back button handler
+  const handleBack = () => {
+    router.back();
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
+     
       {/* Profile Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+      <div className="flex items-center gap-4 mb-8">
+        <button
+          className="px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-100 flex items-center"
+          onClick={handleBack}
+        >
+          <FiArrowLeft className="mr-2" /> Back
+        </button>
         <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
       </div>
 
