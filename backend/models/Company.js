@@ -12,6 +12,7 @@ const companySchema = new mongoose.Schema({
     verified: { type: Boolean, default: false },
     jobs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Job' }],
     recruiters: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    status: { type: String, enum: ['active', 'banned'], default: 'active' },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Company', companySchema);

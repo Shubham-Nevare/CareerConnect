@@ -2,24 +2,26 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  FiMail,
-  FiPhone,
-  FiUser,
-  FiSearch,
-  FiDownload,
-  FiFilter,
-  FiCheck,
-  FiX,
-  FiEye,
-  FiStar,
-  FiCalendar,
-  FiBriefcase,
-  FiBook,
-  FiArrowLeft,
+FiMail,
+FiPhone,
+FiUser,
+FiSearch,
+FiDownload,
+FiFilter,
+FiCheck,
+FiX,
+FiEye,
+FiStar,
+FiCalendar,
+FiBriefcase,
+FiBook,
+FiArrowLeft,
 } from "react-icons/fi";
+import { useAuth } from "../../components/AuthProvider";
 
 export default function AdvancedCandidateSearch() {
   const router = useRouter();
+  const { user, token } = useAuth();
   // Handle View button for table and grid
   const handleViewCandidate = (candidate) => {
     if (candidate && candidate.id) {
@@ -65,100 +67,79 @@ export default function AdvancedCandidateSearch() {
     dateRange: "all",
   });
 
-  // Fetch candidates data
+  // Fetch unique candidates for recruiter using useAuth context
   useEffect(() => {
-    const fetchCandidates = async () => {
+    const fetchUniqueCandidates = async () => {
+      setLoading(true);
       try {
+        if (!user?._id || !token) {
+          setLoading(false);
+          return;
+        }
+        // First, get the count
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/applications`
-        );
-        const applications = await res.json();
-
-        // Helper to fetch user details if missing
-        const fetchUserDetails = async (userId) => {
-          try {
-            const res = await fetch(
-              `${process.env.NEXT_PUBLIC_API_URL}/users/${userId}`
-            );
-            if (!res.ok) return null;
-            return await res.json();
-          } catch {
-            return null;
+          `${process.env.NEXT_PUBLIC_API_URL}/users/${user._id}/unique-candidates`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
-        };
-
-        // Build candidate list, fetching user details if needed
-        const buildCandidates = async () => {
-          const candidateMap = new Map();
-          const promises = applications.map(async (app) => {
-            const id = app.userId._id || app.userId;
-            // Use app.userId fields if present, else fetch from users collection
-            let user = app.userId;
-            let userDetails = {};
-            if (
-              !user.profilePhoto ||
-              !user.phone ||
-              !user.profile ||
-              !user.resume
-            ) {
-              // Fetch from users collection if missing important fields
-              const fetched = await fetchUserDetails(id);
-              if (fetched) userDetails = fetched;
+        );
+        const data = await res.json();
+        console.log('Unique candidates API response:', data);
+        // If candidates array exists, use it
+        if (Array.isArray(data.candidates)) {
+          setCandidates(data.candidates);
+          setFilteredCandidates(data.candidates);
+        } else if (data.count > 0) {
+          // Fallback: fetch all applications for this recruiter
+          const appsRes = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/applications?recruiter=${user._id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
             }
-            // Merge user and userDetails, prefer userDetails for missing fields
-            // Prefer skills/experience from profile if available
-            const merged = {
-              id,
-              name: user.name || userDetails.name || app.name,
-              email: user.email || userDetails.email || app.email,
-              phone:
-                userDetails.profile &&
-                userDetails.profile.basicInfo &&
-                userDetails.profile.basicInfo.phone
-                  ? userDetails.profile.basicInfo.phone
-                  : null,
-              profilePhoto:
-                user.profilePhoto || userDetails.profilePhoto || null,
-
-              status: app.status
-                ? app.status.charAt(0).toUpperCase() +
-                  app.status.slice(1).toLowerCase()
-                : "Applied",
-              dateApplied: new Date(app.createdAt),
-              skills: userDetails.profile.skills || [],
-              experience: userDetails.profile.experience || [],
-              education: userDetails.profile.education || [],
-              location: user.location || userDetails.location || "Remote",
-              resume:
-                userDetails.profile &&
-                userDetails.profile.resume &&
-                userDetails.profile.resume.url
-                  ? userDetails.profile.resume.url
-                  : null,
-              matchScore: Math.floor(Math.random() * 30) + 70, // Random match score 70-100
-            };
-            // Use email as unique key if available, else id
-            const uniqueKey = merged.email ? merged.email.toLowerCase() : id;
-            if (!uniqueKey || candidateMap.has(uniqueKey)) return null;
-            candidateMap.set(uniqueKey, merged);
-            return merged;
+          );
+          const appsData = await appsRes.json();
+          // Extract unique candidates by userId
+          const uniqueMap = new Map();
+          appsData.forEach(app => {
+            const userObj = app.userId || {};
+            const id = userObj._id || userObj.id || app.userId;
+            if (!uniqueMap.has(id)) {
+              uniqueMap.set(id, {
+                id,
+                name: userObj.name || app.name || "No Name",
+                email: userObj.email || app.email || "No Email",
+                profilePhoto: userObj.profilePhoto || null,
+                status: app.status || "Applied",
+                skills: userObj.skills || [],
+                experience: userObj.experience || [],
+                education: userObj.education || [],
+                location: userObj.location || "",
+                dateApplied: app.createdAt || null,
+                resume: userObj.resume || null,
+                matchScore: Math.floor(Math.random() * 30) + 70,
+              });
+            }
           });
-          // Only keep unique candidates
-          const candidatesArr = (await Promise.all(promises)).filter(Boolean);
-          setCandidates(candidatesArr);
-          setFilteredCandidates(candidatesArr);
-        };
-        await buildCandidates();
+          const uniqueCandidates = Array.from(uniqueMap.values());
+          setCandidates(uniqueCandidates);
+          setFilteredCandidates(uniqueCandidates);
+        } else {
+          setCandidates([]);
+          setFilteredCandidates([]);
+        }
       } catch (err) {
-        console.error("Error fetching candidates:", err);
         setCandidates([]);
+        setFilteredCandidates([]);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchCandidates();
-  }, []);
+    fetchUniqueCandidates();
+  }, [user, token]);
 
   // Apply filters
   useEffect(() => {
@@ -251,24 +232,7 @@ export default function AdvancedCandidateSearch() {
 
   const handleBulkAction = (action) => {
     switch (action) {
-      // case "email": {
-      //   let emails = [];
-      //   if (selectedCandidates.length > 0) {
-      //     emails = filteredCandidates
-      //       .filter((c) => selectedCandidates.includes(c.id))
-      //       .map((c) => c.email)
-      //       .filter((email) => email);
-      //   } else {
-      //     emails = filteredCandidates.map((c) => c.email).filter((email) => email);
-      //   }
-      //   if (emails.length > 0) {
-      //     const subject = encodeURIComponent("Job Opportunity at Our Company");
-      //     const body = encodeURIComponent("Dear Candidate,\n\nWe are reaching out regarding your application. Please let us know if you are interested in proceeding further.\n\nRegards,\nRecruitment Team");
-      //     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=&bcc=${encodeURIComponent(emails.join(","))}&su=${subject}&body=${body}`;
-      //     window.open(gmailUrl, "_blank");
-      //   }
-      //   break;
-      // }
+      
       case "email": {
         try {
           // Get selected emails or all filtered candidates if none selected
@@ -644,7 +608,7 @@ export default function AdvancedCandidateSearch() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredCandidates.map((candidate) => (
-                  <tr key={candidate.id} className="hover:bg-gray-50">
+                  <tr key={candidate._id || candidate.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <input
                         type="checkbox"
@@ -750,7 +714,7 @@ export default function AdvancedCandidateSearch() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCandidates.map((candidate) => (
             <div
-              key={candidate.id}
+              key={candidate._id || candidate.id}
               className={`bg-white rounded-lg shadow overflow-hidden border-t-4 ${
                 candidate.status === "Shortlisted" ||
                 candidate.status === "Hired"

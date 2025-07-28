@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -6,20 +6,25 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     role: {
         type: String,
-        enum: ['jobseeker', 'recruiter'],
-        required: true
+        enum: ["jobseeker", "recruiter"],
+        required: true,
     },
     profilePhoto: { type: String },
+    status: { type: String, enum: ["active", "banned"], default: "active" },
     // Recruiter-specific fields
     recruiter: {
         phone: String,
         position: String,
         socialLinks: {
             linkedin: String,
-        }
+        },
     },
     // Reference to company (for recruiters)
-    company: { type: mongoose.Schema.Types.ObjectId, ref: 'Company' },
+    company: { type: mongoose.Schema.Types.ObjectId, ref: "Company" },
+    jobPosts: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Job",
+    }, ],
     // Jobseeker profile (unchanged)
     profile: {
         basicInfo: {
@@ -29,7 +34,7 @@ const userSchema = new mongoose.Schema({
             location: String,
             headline: String,
             summary: String,
-            profilePhoto: String
+            profilePhoto: String,
         },
         experience: [{
             id: String,
@@ -39,43 +44,45 @@ const userSchema = new mongoose.Schema({
             startDate: String,
             endDate: String,
             currentJob: Boolean,
-            description: String
-        }],
+            description: String,
+        }, ],
         education: [{
             id: String,
             degree: String,
             institution: String,
             field: String,
             startDate: String,
-            endDate: String
-        }],
+            endDate: String,
+        }, ],
         skills: [{
             name: String,
-            level: String
-        }],
+            level: String,
+        }, ],
         certifications: [{
             name: String,
             issuer: String,
-            date: String
-        }],
+            date: String,
+        }, ],
         socialLinks: {
             linkedin: String,
             github: String,
-            portfolio: String
+            portfolio: String,
         },
         resume: {
             url: String,
-            lastUpdated: String
+            lastUpdated: String,
         },
         preferences: {
             jobTypes: [String],
             locations: [String],
             salaryExpectation: String,
-            visibility: String
+            visibility: String,
         },
-        savedJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Job' }],
-        applications: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Application' }],
+        savedJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Job" }],
+        applications: [
+            { type: mongoose.Schema.Types.ObjectId, ref: "Application" },
+        ],
     },
 }, { timestamps: true });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model("User", userSchema);

@@ -7,6 +7,9 @@ const companiesRouter = require('./routes/companies');
 const jobsRouter = require('./routes/jobs');
 const applicationsRouter = require('./routes/applications');
 const authRouter = require('./routes/auth');
+const adminRouter = require('./routes/admin');
+const supportRouter = require('./routes/support');
+
 const cors = require('cors');
 const path = require('path');
 
@@ -52,6 +55,9 @@ app.use('/companies', companiesRouter);
 app.use('/jobs', jobsRouter);
 app.use('/applications', applicationsRouter);
 app.use('/auth', authRouter);
+app.use('/admin', adminRouter);
+app.use('/support', supportRouter);
+
 
 app.listen(process.env.PORT, () => {
     console.log(`Server is running on:${process.env.PORT}`);

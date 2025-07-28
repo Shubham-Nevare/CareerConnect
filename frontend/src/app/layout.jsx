@@ -3,6 +3,7 @@ import "./globals.css";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import { AuthProvider } from "./components/AuthProvider";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  // metadataBase: new URL('http://localhost:3001'), 
+  // metadataBase: new URL('http://localhost:3001'),
   title: "CareerConnect | Find Your Dream Job",
   description:
     "Discover thousands of job opportunities across various industries. Find your perfect career match today.",
@@ -37,17 +38,18 @@ export const metadata = {
   // },
 };
 
-
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="bg-gray-50 min-h-screen flex flex-col">
         <AuthProvider>
           <Navbar />
+          <Toaster position="right-top" reverseOrder={false} />
+
           <main className="flex-1 mx-auto w-full flex flex-col justify-center mb-10">
             {children}
           </main>
-         <Footer />
+          <Footer />
         </AuthProvider>
       </body>
     </html>

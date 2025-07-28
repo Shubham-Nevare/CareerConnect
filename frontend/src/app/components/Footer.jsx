@@ -53,11 +53,11 @@ function Footer() {
                   Companies
                 </Link>
               </li>
-              <li>
-                <Link href="/post-job" className="hover:text-blue-600 transition-colors">
+              {/* <li>
+                <Link href="/recruiter-dashboard" className="hover:text-blue-600 transition-colors">
                   Post a Job
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link href="/career-advice" className="hover:text-blue-600 transition-colors">
                   Career Advice
@@ -71,7 +71,10 @@ function Footer() {
             <h3 className="text-lg font-semibold text-gray-900">Resources</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/resume-builder" className="hover:text-blue-600 transition-colors">
+                {/* <Link href="/resume-builder" className="hover:text-blue-600 transition-colors">
+                  Resume Builder
+                </Link> */}
+                <Link href="https://www.resume-now.com/lp/rnarsmsm121?utm_source=google&utm_medium=sem&utm_campaign=20457377013&utm_term=resume%20builder&network=g&device=c&adposition=&adgroupid=152901557416&placement=&adid=687406818899&gad_source=1&gad_campaignid=20457377013&gbraid=0AAAAADEP8E5hhUW8b2BVPkNzwdU-6cyYN&gclid=Cj0KCQjws4fEBhD-ARIsACC3d2-oNG9LdGefGfD_5IOw6dCv0ZNUEpvlLN-7nPmpwcIpCIKhhNchT8gaAkA4EALw_wcB" className="hover:text-blue-600 transition-colors">
                   Resume Builder
                 </Link>
               </li>
@@ -81,12 +84,18 @@ function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/salary-calculator" className="hover:text-blue-600 transition-colors">
+                {/* <Link href="/salary-calculator" className="hover:text-blue-600 transition-colors">
+                  Salary Calculator
+                </Link> */}
+                <Link href="https://www.etmoney.com/tools-and-calculators/salary-calculator" className="hover:text-blue-600 transition-colors">
                   Salary Calculator
                 </Link>
               </li>
               <li>
-                <Link href="/blog" className="hover:text-blue-600 transition-colors">
+                {/* <Link href="/blog" className="hover:text-blue-600 transition-colors">
+                  Career Blog
+                </Link> */}
+                <Link href="https://detailed.com/career-blogs/" className="hover:text-blue-600 transition-colors">
                   Career Blog
                 </Link>
               </li>
@@ -99,15 +108,15 @@ function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start">
                 <FiMail className="mt-1 mr-3 flex-shrink-0" />
-                <span>contact@careerconnect.com</span>
+                <span>careerconnectjobportal@gmail.com</span>
               </li>
               <li className="flex items-start">
                 <FiPhone className="mt-1 mr-3 flex-shrink-0" />
-                <span>+1 (555) 123-4567</span>
+                <span>+91 1234567890</span>
               </li>
               <li className="flex items-start">
                 <FiMapPin className="mt-1 mr-3 flex-shrink-0" />
-                <span>123 Career St, San Francisco, CA 94107</span>
+                <span>123 Career St, Mumbai, India 401107</span>
               </li>
             </ul>
           </div>
@@ -121,25 +130,31 @@ function Footer() {
             </div>
             <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
               <Link 
-                href="/terms" 
+                href="/terms-of-service" 
                 className="text-sm hover:text-blue-600 transition-colors"
               >
                 Terms of Service
               </Link>
               <Link 
-                href="/privacy" 
+                href="/privacy-policy" 
                 className="text-sm hover:text-blue-600 transition-colors"
               >
                 Privacy Policy
               </Link>
               <Link 
-                href="/cookies" 
+                href="/cookie-policy" 
                 className="text-sm hover:text-blue-600 transition-colors"
               >
                 Cookie Policy
               </Link>
+               <Link 
+                href="/contact-support" 
+                className="text-sm hover:text-blue-600 transition-colors"
+              >
+                Contact Support
+              </Link>
               <Link 
-                href="/gdpr" 
+                href="/gdpr-compliance"   
                 className="text-sm hover:text-blue-600 transition-colors"
               >
                 GDPR Compliance

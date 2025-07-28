@@ -40,19 +40,32 @@ export default function LoginPage() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.message || 'Login failed')
-      
+      // Only allow login if user.status === 'active'
+      if (data.user?.status !== 'active') {
+        // Custom error with link markup
+        throw {
+          custom: true,
+          message: (
+            <span>
+              Your account is not active. Please <Link href="/contact-support" className="text-gray-700 hover:text-blue-600">Contact Support</Link>.
+            </span>
+          )
+        };
+      }
       login(data.user, data.token)
       setSuccess('Login successful! Redirecting...')
-      
       let redirectPath = '/dashboard'
       if (data.user?.role === 'recruiter') redirectPath = '/recruiter-dashboard'
       if (data.user?.role === 'admin') redirectPath = '/admin-dashboard'
-      
       setTimeout(() => {
         router.push(redirectPath)
       }, 1000)
     } catch (err) {
-      setError(err.message)
+      if (err.custom && err.message) {
+        setError(err.message);
+      } else {
+        setError(err.message);
+      }
     } finally {
       setLoading(false)
     }
@@ -82,7 +95,7 @@ export default function LoginPage() {
                     </svg>
                   </div>
                   <div className="ml-3">
-                    <p className="text-sm text-red-700">{error}</p>
+                    <p className="text-sm text-red-700">{typeof error === 'string' ? error : error}</p>
                   </div>
                 </div>
               </div>

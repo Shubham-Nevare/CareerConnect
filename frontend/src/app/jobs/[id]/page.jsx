@@ -27,67 +27,76 @@ export default function JobDetailsPage() {
   const { user, token } = useAuth();
 
   useEffect(() => {
-  // Reset states first
-  setUserApplication(null);
-  setJob(null); // optional: clear job if needed
-  setLoading(true);
+    // Reset states first
+    setUserApplication(null);
+    setJob(null); // optional: clear job if needed
+    setLoading(true);
 
-  const fetchJob = async () => {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/jobs/${id}`);
-      if (!res.ok) throw new Error("Job not found");
-      const data = await res.json();
-      setJob(data);
-    } catch (err) {
-      setError("Failed to load job details");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchSimilarJobs = async () => {
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/jobs/latest/${id}`
-      );
-      if (res.ok) {
+    const fetchJob = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/jobs/${id}`
+        );
+        if (!res.ok) throw new Error("Job not found");
         const data = await res.json();
-        setSimilarJobs(data);
+        setJob(data);
+      } catch (err) {
+        setError("Failed to load job details");
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("Error fetching similar jobs", err);
-    }
-  };
+    };
 
-  const fetchUserApplication = async () => {
-    if (!user || !id) return;
-
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/applications?userId=${
-          user._id || user.id
-        }&jobId=${id}`
-      );
-      if (res.ok) {
-        const data = await res.json();
-        // Make sure it's actually for THIS job
-        const matched = Array.isArray(data)
-          ? data.find((app) => app.jobId === id || app.jobId?._id === id)
-          : null;
-        setUserApplication(matched || null);
+    const fetchSimilarJobs = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/jobs/latest/${id}`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          setSimilarJobs(data);
+        }
+      } catch (err) {
+        console.error("Error fetching similar jobs", err);
       }
-    } catch (err) {
-      console.error("Failed to fetch user application", err);
-      setUserApplication(null);
-    }
-  };
+    };
 
-  fetchJob();
-  fetchSimilarJobs();
-  fetchUserApplication();
-}, [id, user]);
+    const fetchUserApplication = async () => {
+      if (!user || !id) return;
 
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/applications?userId=${
+            user._id || user.id
+          }&jobId=${id}`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          // Make sure it's actually for THIS job
+          // const matched = Array.isArray(data)
+          //   ? data.find((app) => app.jobId === id || app.jobId?._id === id)
+          //   : null;
+          // setUserApplication(matched || null);
+          const matched = Array.isArray(data)
+            ? data.find(
+                (app) =>
+                  (app.userId === (user._id || user.id) ||
+                    app.userId?._id === (user._id || user.id)) &&
+                  (app.jobId === id || app.jobId?._id === id)
+              )
+            : null;
+          setUserApplication(matched || null);
+        }
+      } catch (err) {
+        console.error("Failed to fetch user application", err);
+        setUserApplication(null);
+      }
+    };
 
+    fetchJob();
+    fetchSimilarJobs();
+    fetchUserApplication();
+  }, [id, user]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -184,8 +193,9 @@ export default function JobDetailsPage() {
       <main className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="mb-6">
-            <Link
-              href="/jobs"
+            <button
+              // href="/jobs"
+              onClick={() => router.back()}
               className="text-blue-600 hover:text-blue-800 flex items-center"
             >
               <svg
@@ -201,8 +211,8 @@ export default function JobDetailsPage() {
                   d="M10 19l-7-7m0 0l7-7m-7 7h18"
                 ></path>
               </svg>
-              Back to jobs
-            </Link>
+              Back
+            </button>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8">
@@ -312,69 +322,68 @@ export default function JobDetailsPage() {
                       </button> */}
 
                       <button
-  className={`ml-2 px-4 py-2 rounded-md font-medium transition ${
-    !user
-      ? "bg-gray-500 text-white cursor-pointer"
-      : userApplication
-      ? "bg-gray-400 text-white cursor-not-allowed"
-      : "bg-blue-600 text-white hover:bg-blue-700"
-  }`}
-  onClick={async () => {
-    if (!user) {
-      router.push("/login"); // or alert("Login to apply")
-      return;
-    }
+                        className={`ml-2 px-4 py-2 rounded-md font-medium transition ${
+                          !user
+                            ? "bg-gray-500 text-white cursor-pointer"
+                            : userApplication
+                            ? "bg-gray-400 text-white cursor-not-allowed"
+                            : "bg-blue-600 text-white hover:bg-blue-700"
+                        }`}
+                        onClick={async () => {
+                          if (!user) {
+                            router.push("/login"); // or alert("Login to apply")
+                            return;
+                          }
 
-    if (userApplication) {
-      alert("You have already applied for this job.");
-      return;
-    }
+                          if (userApplication) {
+                            alert("You have already applied for this job.");
+                            return;
+                          }
 
-    // Submit application
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/jobs/${job._id}/apply`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            userId: user._id || user.id,
-            name: user.name,
-            email: user.email,
-            jobId: job._id,
-            companyId: job.company?._id,
-            status: "applied",
-          }),
-        }
-      );
+                          // Submit application
+                          try {
+                            const res = await fetch(
+                              `${process.env.NEXT_PUBLIC_API_URL}/jobs/${job._id}/apply`,
+                              {
+                                method: "POST",
+                                headers: {
+                                  "Content-Type": "application/json",
+                                  Authorization: `Bearer ${token}`,
+                                },
+                                body: JSON.stringify({
+                                  userId: user._id || user.id,
+                                  name: user.name,
+                                  email: user.email,
+                                  jobId: job._id,
+                                  companyId: job.company?._id,
+                                  status: "applied",
+                                }),
+                              }
+                            );
 
-      if (res.ok) {
-        alert("Application submitted successfully.");
-        setUserApplication({
-          userId: user._id || user.id,
-          jobId: job._id,
-          status: "applied",
-        });
-      } else {
-        const errData = await res.json();
-        alert(errData.message || "Application failed.");
-      }
-    } catch (err) {
-      alert("Something went wrong.");
-    }
-  }}
-  disabled={!!userApplication}
->
-  {!user
-    ? "Login to Apply"
-    : userApplication
-    ? "Already Applied"
-    : "Apply"}
-</button>
-
+                            if (res.ok) {
+                              alert("Application submitted successfully.");
+                              setUserApplication({
+                                userId: user._id || user.id,
+                                jobId: job._id,
+                                status: "applied",
+                              });
+                            } else {
+                              const errData = await res.json();
+                              alert(errData.message || "Application failed.");
+                            }
+                          } catch (err) {
+                            alert("Something went wrong.");
+                          }
+                        }}
+                        disabled={!!userApplication}
+                      >
+                        {!user
+                          ? "Login to Apply"
+                          : userApplication
+                          ? "Already Applied"
+                          : "Apply"}
+                      </button>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">

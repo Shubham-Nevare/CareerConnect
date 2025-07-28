@@ -29,7 +29,7 @@ export default function AboutPage() {
           
           <div className="grid md:grid-cols-2 gap-12 ">
             <div className=''>
-              <h3 className="text-2xl font-semibold text-gray-900 mb-4">Founded in 2023</h3>
+              <h3 className="text-2xl font-semibold text-gray-900 mb-4">Founded in 2025</h3>
               <p className="text-gray-600 mb-4">
                 CareerConnect was born out of a simple idea: to make job searching and hiring more human, more efficient, 
                 and more effective for everyone involved.
@@ -149,7 +149,7 @@ export default function AboutPage() {
                 Sign Up Now
               </Link>
               <Link 
-                href="/contact" 
+                href="/contact-support" 
                 className="px-8 py-3 bg-transparent border-2 border-white text-white font-medium rounded-lg hover:bg-white hover:text-gray-900 transition"
               >
                 Contact Us

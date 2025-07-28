@@ -93,10 +93,12 @@ export default function DashboardPage() {
         setApplications(appsData)
 
         // Remove the fetch for /users/stats to prevent 400 errors
-        const statsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/stats`, {
+        const statsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${user._id}/stats`, {
           headers: { Authorization: `Bearer ${token}` }
         })
         const statsData = await statsResponse.json()
+        // console.log("Stats response:", statsData); 
+
         setStats(statsData)
 
         // Fetch notifications
