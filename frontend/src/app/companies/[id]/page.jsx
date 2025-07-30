@@ -50,7 +50,7 @@ const CompanyProfilePage = () => {
     );
   }
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <div className="max-w-3xl mx-auto px-4 pb-6 pt-14">
       <button
         type="button"
         onClick={() => router.back()}

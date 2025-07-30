@@ -12,6 +12,9 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function HomePage() {
   const [latestJobs, setLatestJobs] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [location, setLocation] = useState("");
+  const router = require('next/navigation').useRouter();
 
   useEffect(() => {
     // Fetch jobs from API, filter active, sort by createdAt desc, take 4
@@ -94,6 +97,15 @@ export default function HomePage() {
     });
   }, []);
 
+  // Handler for search
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (searchTerm) params.append('q', searchTerm);
+    if (location) params.append('location', location);
+    router.push(`/jobs${params.toString() ? `?${params.toString()}` : ''}`);
+  };
+
   return (
     <>
       {/* Hero Section */}
@@ -130,35 +142,90 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div
+          <form
             ref={searchRef}
-            className="relative max-w-2xl mx-auto bg-white bg-opacity-20 backdrop-blur-sm rounded-xl p-1 shadow-xl"
+            className="relative max-w-2xl mx-auto bg-white/20 backdrop-blur-sm rounded-xl p-1 shadow-xl border border-white/10"
+            onSubmit={handleSearch}
           >
-            <div className="flex flex-col md:flex-row">
-              <input
-                type="text"
-                className="flex-grow px-5 py-4 rounded-lg bg-white bg-opacity-20 placeholder-white focus:outline-none focus:ring-2 focus:ring-yellow-300 text-white"
-                placeholder="Job title, keywords, or company"
-              />
-              <select className="md:w-40 px-4 py-2 md:py-0 bg-white bg-opacity-20 text-black border-l-0 md:border-l border-white border-opacity-30 focus:outline-none">
-                <option value="" className="text-gray-900">
-                  All Locations
-                </option>
-                <option value="remote" className="text-gray-900">
-                  Remote
-                </option>
-                <option value="us" className="text-gray-900">
-                  United States
-                </option>
-                <option value="uk" className="text-gray-900">
-                  United Kingdom
-                </option>
-              </select>
-              <button className="px-6 py-3 bg-yellow-400 text-gray-900 font-medium rounded-lg hover:bg-yellow-300 transition">
-                Search
+            <div className="flex flex-col md:flex-row gap-1">
+              {/* Search Input */}
+              <div className="flex-grow relative">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  className="w-full px-5 py-3 md:py-4 rounded-lg bg-white/20 placeholder-white/80 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 text-white text-sm md:text-base transition-all"
+                  placeholder="Job title, keywords, or company"
+                />
+                <svg
+                  className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/50"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+
+              {/* Location Select */}
+              <div className="relative">
+                <select
+                  className="w-full px-4 py-3 md:py-4 bg-white/20 text-white border-0 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 rounded-lg appearance-none text-sm md:text-base"
+                  value={location}
+                  onChange={e => setLocation(e.target.value)}
+                >
+                  <option value="" className="bg-gray-800 text-white">
+                    All Locations
+                  </option>
+                  <option value="remote" className="bg-gray-800 text-white">
+                    Remote
+                  </option>
+                  <option value="mumbai" className="bg-gray-800 text-white">
+                    Mumbai
+                  </option>
+                  <option value="pune" className="bg-gray-800 text-white">
+                    Pune
+                  </option>
+                </select>
+                <svg
+                  className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/50 pointer-events-none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+
+              {/* Search Button */}
+              <button
+                type="submit"
+                className="px-6 py-3 md:py-4 bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-medium rounded-lg transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg active:scale-95"
+              >
+                <svg
+                  className="h-5 w-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span>Search</span>
               </button>
             </div>
-          </div>
+          </form>
         </div>
       </section>
 
@@ -286,9 +353,16 @@ export default function HomePage() {
                               {job.experience}
                             </span>
                           )}
-                          {Array.isArray(job.requirements) && job.requirements.length > 0 && job.requirements.map((requirements, i) => (
-                            <span key={i} className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">{requirements}</span>
-                          ))}
+                          {Array.isArray(job.requirements) &&
+                            job.requirements.length > 0 &&
+                            job.requirements.map((requirements, i) => (
+                              <span
+                                key={i}
+                                className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded"
+                              >
+                                {requirements}
+                              </span>
+                            ))}
                         </div>
                       </div>
                     </div>

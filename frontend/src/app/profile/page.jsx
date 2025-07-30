@@ -332,7 +332,7 @@ export default function JobSeekerProfile() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="max-w-6xl mx-auto px-4 py-14">
       {/* Profile Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>

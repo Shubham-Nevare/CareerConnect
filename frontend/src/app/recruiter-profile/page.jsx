@@ -203,7 +203,7 @@ export default function RecruiterProfile() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 bg-gray-50 min-h-screen">
+    <div className="max-w-6xl mx-auto px-4 py-14 bg-gray-50 min-h-screen">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 pb-6 border-b border-gray-200">
         <div className="flex items-center gap-4">

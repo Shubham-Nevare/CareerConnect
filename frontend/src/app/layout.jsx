@@ -46,7 +46,7 @@ export default function RootLayout({ children }) {
           <Navbar />
           <Toaster position="right-top" reverseOrder={false} />
 
-          <main className="flex-1 mx-auto w-full flex flex-col justify-center mb-10">
+          <main className="flex-1 mx-auto w-full flex flex-col justify-center mb-10 -mt-10">
             {children}
           </main>
           <Footer />

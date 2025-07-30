@@ -30,6 +30,14 @@ router.post('/', async(req, res) => {
                 job.company, { $push: { jobs: job._id } }, { new: true }
             );
         }
+        // Also add job._id to the recruiter's jobPosts array
+        if (req.body.recruiterId) {
+            await User.findByIdAndUpdate(
+                req.body.recruiterId,
+                { $push: { jobPosts: job._id } },
+                { new: true }
+            );
+        }
         res.status(201).json(job);
     } catch (err) {
         res.status(400).json({ error: err.message });
@@ -207,6 +215,11 @@ router.post('/:jobId/apply', upload.single('resume'), async(req, res) => {
 
         await Job.findByIdAndUpdate(
             req.params.jobId, { $push: { applicants: application._id } }
+        );
+
+        // Also push application._id to user's applications array
+        await User.findByIdAndUpdate(
+            userId, { $push: { applications: application._id } }
         );
 
         res.status(201).json(application);

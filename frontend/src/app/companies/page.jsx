@@ -2,75 +2,32 @@
 import { FiStar, FiMapPin, FiLink, FiUsers, FiDollarSign } from "react-icons/fi";
 import Link from "next/link";
 
+
+import { useEffect, useState } from "react";
+
 export default function CompaniesPage() {
-  const companies = [
-    {
-      id: 1,
-      name: "TechNova Solutions",
-      logo: "/company-logos/technova.png",
-      industry: "Software Development",
-      rating: 4.5,
-      reviews: 128,
-      location: "San Francisco, CA",
-      jobs: 24,
-      description: "Leading provider of enterprise software solutions with a focus on AI and machine learning.",
-    },
-    {
-      id: 2,
-      name: "GreenEarth Energy",
-      logo: "/company-logos/greenearth.png",
-      industry: "Renewable Energy",
-      rating: 4.2,
-      reviews: 86,
-      location: "Austin, TX",
-      jobs: 15,
-      description: "Pioneers in sustainable energy solutions and green technology innovations.",
-    },
-    {
-      id: 3,
-      name: "Global Finance Corp",
-      logo: "/company-logos/globalfinance.png",
-      industry: "Financial Services",
-      rating: 3.9,
-      reviews: 215,
-      location: "New York, NY",
-      jobs: 32,
-      description: "International banking and financial services company with operations in 40+ countries.",
-    },
-    {
-      id: 4,
-      name: "HealthPlus Systems",
-      logo: "/company-logos/healthplus.png",
-      industry: "Healthcare Technology",
-      rating: 4.1,
-      reviews: 97,
-      location: "Boston, MA",
-      jobs: 18,
-      description: "Innovative healthcare IT solutions improving patient outcomes worldwide.",
-    },
-    {
-      id: 5,
-      name: "UrbanFood Delivery",
-      logo: "/company-logos/urbanfood.png",
-      industry: "Food Technology",
-      rating: 4.0,
-      reviews: 156,
-      location: "Chicago, IL",
-      jobs: 12,
-      description: "Revolutionizing food delivery with smart logistics and sustainable packaging.",
-    },
-    {
-      id: 6,
-      name: "EduFuture Learning",
-      logo: "/company-logos/edufuture.png",
-      industry: "Education Technology",
-      rating: 4.3,
-      reviews: 72,
-      location: "Seattle, WA",
-      jobs: 9,
-      description: "Transforming education through adaptive learning platforms and AI tutors.",
-    },
-  ];
+  const [companies, setCompanies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/companies`);
+        if (!res.ok) throw new Error("Failed to fetch companies");
+        const data = await res.json();
+        setCompanies(Array.isArray(data) ? data : data.companies || []);
+      } catch (err) {
+        setError(err.message);
+        setCompanies([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCompanies();
+  }, []);
 
   const industries = [
     "Technology",
@@ -106,7 +63,7 @@ export default function CompaniesPage() {
                 <input
                   type="text"
                   id="search"
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-1 px-1"
                   placeholder="Search companies..."
                 />
               </div>
@@ -115,7 +72,7 @@ export default function CompaniesPage() {
               <label htmlFor="industry" className="sr-only">Industry</label>
               <select
                 id="industry"
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-1 px-1"
               >
                 <option value="">All Industries</option>
                 {industries.map((industry) => (
@@ -127,13 +84,13 @@ export default function CompaniesPage() {
               <label htmlFor="location" className="sr-only">Location</label>
               <select
                 id="location"
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-1 px-1"
               >
                 <option value="">All Locations</option>
                 <option value="remote">Remote</option>
-                <option value="us">United States</option>
-                <option value="europe">Europe</option>
-                <option value="asia">Asia</option>
+                <option value="us">Mumbais</option>
+                <option value="europe">Pune</option>
+                <option value="asia">WFH</option>
               </select>
             </div>
           </div>
@@ -148,69 +105,77 @@ export default function CompaniesPage() {
                 </h2>
               </div>
               <div className="divide-y divide-gray-200">
-                {companies.map((company) => (
-                  <div key={company.id} className="p-6 hover:bg-gray-50 transition duration-150">
-                    <div className="flex flex-col sm:flex-row">
-                      <div className="flex-shrink-0 mb-4 sm:mb-0 sm:mr-6">
-                        <img
-                          className="h-16 w-16 rounded-full object-contain border border-gray-200"
-                          src={company.logo}
-                          alt={`${company.name} logo`}
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-lg font-semibold text-gray-900">
-                            <Link href={`/companies/${company.id}`} className="hover:text-blue-600">
-                              {company.name}
+                {loading ? (
+                  <div className="p-6 text-center text-gray-400">Loading companies...</div>
+                ) : error ? (
+                  <div className="p-6 text-center text-red-500">{error}</div>
+                ) : companies.length === 0 ? (
+                  <div className="p-6 text-center text-gray-500">No companies found.</div>
+                ) : (
+                  companies.map((company) => (
+                    <div key={company._id || company.id} className="p-6 hover:bg-gray-50 transition duration-150">
+                      <div className="flex flex-col sm:flex-row">
+                        <div className="flex-shrink-0 mb-4 sm:mb-0 sm:mr-6">
+                          <img
+                            className="h-16 w-16 rounded-full object-contain border border-gray-200"
+                            src={company.logo ? (company.logo.startsWith('http') ? company.logo : `${process.env.NEXT_PUBLIC_API_URL}${company.logo}`) : '/default-company.jpg'}
+                            alt={`${company.name} logo`}
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <h3 className="text-lg font-semibold text-gray-900">
+                              <Link href={`/companies/${company._id || company.id}`} className="hover:text-blue-600">
+                                {company.name}
+                              </Link>
+                            </h3>
+                            <div className="flex items-center">
+                              <FiStar className="text-yellow-400" />
+                              <span className="ml-1 text-sm font-medium text-gray-900">
+                                {typeof company.rating === 'number' && !isNaN(company.rating) ? company.rating.toFixed(1) : '4.0'}
+                              </span>
+                              <span className="mx-1 text-gray-300">•</span>
+                              <span className="text-sm text-gray-500">
+                                {typeof company.reviews === 'number' && !isNaN(company.reviews) ? company.reviews : 100} reviews
+                              </span>
+                            </div>
+                          </div>
+                          <div className="mt-2 flex flex-wrap items-center text-sm text-gray-500">
+                            <div className="flex items-center mr-4">
+                              <FiMapPin className="mr-1" />
+                              {company.location || 'N/A'}
+                            </div>
+                            <div className="flex items-center mr-4">
+                              <FiUsers className="mr-1" />
+                              {company.industry || 'N/A'}
+                            </div>
+                            <div className="flex items-center">
+                              <FiDollarSign className="mr-1" />
+                              {(company.jobs?.length || company.jobs || 0)} open jobs
+                            </div>
+                          </div>
+                          <p className="mt-3 text-sm text-gray-600">
+                            {company.description || ''}
+                          </p>
+                          <div className="mt-4 flex space-x-3">
+                            <Link
+                              href={`/companies/${company._id || company.id}`}
+                              className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                            >
+                              View Company
                             </Link>
-                          </h3>
-                          <div className="flex items-center">
-                            <FiStar className="text-yellow-400" />
-                            <span className="ml-1 text-sm font-medium text-gray-900">
-                              {company.rating}
-                            </span>
-                            <span className="mx-1 text-gray-300">•</span>
-                            <span className="text-sm text-gray-500">
-                              {company.reviews} reviews
-                            </span>
+                            <Link
+                              href={`/jobs?company=${encodeURIComponent(company.name)}`}
+                              className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+                            >
+                              View Jobs
+                            </Link>
                           </div>
-                        </div>
-                        <div className="mt-2 flex flex-wrap items-center text-sm text-gray-500">
-                          <div className="flex items-center mr-4">
-                            <FiMapPin className="mr-1" />
-                            {company.location}
-                          </div>
-                          <div className="flex items-center mr-4">
-                            <FiUsers className="mr-1" />
-                            {company.industry}
-                          </div>
-                          <div className="flex items-center">
-                            <FiDollarSign className="mr-1" />
-                            {company.jobs} open jobs
-                          </div>
-                        </div>
-                        <p className="mt-3 text-sm text-gray-600">
-                          {company.description}
-                        </p>
-                        <div className="mt-4 flex space-x-3">
-                          <Link
-                            href={`/companies/${company.id}`}
-                            className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                          >
-                            View Company
-                          </Link>
-                          <Link
-                            href={`/companies/${company.id}/jobs`}
-                            className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
-                          >
-                            View Jobs
-                          </Link>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -249,15 +214,19 @@ export default function CompaniesPage() {
               </div>
               <div className="px-6 py-4">
                 <ul className="space-y-4">
-                  {companies.slice(0, 4).map((company) => (
-                    <li key={company.id}>
+                  {loading ? (
+                    <li className="text-gray-400">Loading...</li>
+                  ) : error ? (
+                    <li className="text-red-500">{error}</li>
+                  ) : companies.slice(0, 4).map((company) => (
+                    <li key={company._id || company.id}>
                       <div className="text-sm font-medium text-gray-900">
                         <Link href="#" className="hover:text-blue-600">
                           Senior Software Engineer
                         </Link>
                       </div>
                       <div className="text-sm text-gray-500 mt-1">
-                        {company.name} • {company.location}
+                        {company.name} • {company.location || 'N/A'}
                       </div>
                       <div className="mt-2 text-xs text-gray-500">
                         2 days ago • Full-time

@@ -261,7 +261,7 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-4 py-14">
       {error && (
         <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded">
           <div className="flex items-center">

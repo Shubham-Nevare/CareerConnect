@@ -80,7 +80,7 @@ export default function RecruiterDashboard() {
     type: "Full-time",
     requirements: "",
     responsibilities: "",
-    experience: "Fresher",
+    experience: "",
   });
   const [posting, setPosting] = useState(false);
   const [error, setError] = useState("");
@@ -95,10 +95,9 @@ export default function RecruiterDashboard() {
 
   useEffect(() => {
     const fetchJobs = async () => {
-      if (!user?._id || !token) return;
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/users/${user._id}/jobposts`,
+          `${process.env.NEXT_PUBLIC_API_URL}/jobs/recruiter`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -106,7 +105,7 @@ export default function RecruiterDashboard() {
           }
         );
         const data = await res.json();
-        setJobs(Array.isArray(data) ? data : []);
+        setJobs(Array.isArray(data) ? data : data.jobs || []);
       } catch (err) {
         setJobs([]);
       }
@@ -132,31 +131,34 @@ export default function RecruiterDashboard() {
     fetchCompany();
   }, [user]);
 
-
   useEffect(() => {
-    const fetchUniqueCandidatesForRecruiter = async () => {
-      if (!user?._id) return;
-      
+    const fetchTotalUniqueCandidates = async () => {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/users/${user._id}/unique-candidates`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        if (!user?._id) {
+          setTotalUniqueCandidates(0);
+          return;
+        }
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${user._id}/unique-candidates`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await res.json();
-        setTotalUniqueCandidates(data.count || 0);
+        // Support both array and count response
+        if (Array.isArray(data.candidates)) {
+          setTotalUniqueCandidates(data.candidates.length);
+        } else if (typeof data.count === "number") {
+          setTotalUniqueCandidates(data.count);
+        } else {
+          setTotalUniqueCandidates(0);
+        }
       } catch (err) {
-        console.error("Failed to fetch unique candidates:", err);
         setTotalUniqueCandidates(0);
       }
     };
-  
-    fetchUniqueCandidatesForRecruiter();
+    fetchTotalUniqueCandidates();
   }, [user, token]);
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
@@ -200,7 +202,7 @@ export default function RecruiterDashboard() {
           title: form.title.trim(),
           description: form.description.trim(),
           location: form.location.trim(),
-          salary: String(Number(form.salary) * 100000), // Convert LPA to INR
+          salary: String(Math.round(parseFloat(form.salary) * 100000)), // Convert LPA to INR, e.g. 5 -> 500000
           company: company._id,
           type: form.type,
           requirements: form.requirements.split(",").map((r) => r.trim()),
@@ -208,34 +210,11 @@ export default function RecruiterDashboard() {
             .split(",")
             .map((r) => r.trim()),
           experience: form.experience,
-          postedBy: user._id // Explicitly add who posted the job
+          recruiterId: user._id || user.id,
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to post job");
-
-      // Then update the user's jobPosts array with the new job ID
-      const userUpdateRes = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/${
-          user._id || user.id
-        }/jobposts`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            jobId: data._id, // The ID of the newly created job
-          }),
-        }
-      );
-
-      if (!userUpdateRes.ok) {
-        const errorData = await userUpdateRes.json();
-        throw new Error(errorData.error || "Failed to update user profile");
-      }
-
       setSuccess("Job posted successfully!");
       setForm({
         title: "",
@@ -332,15 +311,14 @@ export default function RecruiterDashboard() {
     });
   };
 
-  // Jobs fetched are already posted by the logged-in user
-  const userPostedJobs = Array.isArray(jobs) ? jobs : [];
-  const filteredPostedJobs = userPostedJobs.filter((job) =>
-    job.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPostedJobs = Array.isArray(jobs)
+    ? jobs.filter((job) =>
+        job.title.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : [];
 
-  // Only applicants for jobs posted by the logged-in user
-  const allApplicants = Array.isArray(userPostedJobs)
-    ? userPostedJobs.reduce((acc, job) => {
+  const allApplicants = Array.isArray(jobs)
+    ? jobs.reduce((acc, job) => {
         if (!job.applicants) return acc;
         const applicantsForJob = job.applicants.map((applicant) => ({
           ...applicant,
@@ -354,9 +332,7 @@ export default function RecruiterDashboard() {
   const filteredApplicants = allApplicants
     .filter((applicant) => {
       const matchesSearch =
-        (applicant.name || "")
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
+        (applicant.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
         (applicant.jobTitle || "")
           .toLowerCase()
           .includes(searchTerm.toLowerCase());
@@ -371,17 +347,17 @@ export default function RecruiterDashboard() {
       return dateB - dateA;
     });
 
-  const activeJobs = userPostedJobs.filter((job) => job.status === "active").length;
-  const closedJobs = userPostedJobs.filter((job) => job.status === "closed").length;
-  const archivedJobs = userPostedJobs.filter((job) => job.status === "archived").length;
+  const activeJobs = jobs.filter((job) => job.status === "active").length;
+  const closedJobs = jobs.filter((job) => job.status === "closed").length;
+  const archivedJobs = jobs.filter((job) => job.status === "archived").length;
 
-  const totalApplicants = userPostedJobs.reduce(
+  const totalApplicants = jobs.reduce(
     (sum, job) => sum + (job.applicants?.length || 0),
     0
   );
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-14">
       {/* Dashboard Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
         <div>
@@ -409,14 +385,14 @@ export default function RecruiterDashboard() {
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-        {/* Total Jobs (posted by logged-in recruiter) */}
+        {/* Total Jobs */}
         <div className="bg-white p-4 rounded-lg shadow-sm flex items-center">
           <div className="bg-blue-100 p-3 rounded-full mr-4">
             <FiBriefcase className="text-blue-500 text-2xl" />
           </div>
           <div>
-            <p className="text-sm text-gray-500">Posted Jobs</p>
-            <p className="text-2xl font-bold">{userPostedJobs.length}</p>
+            <p className="text-sm text-gray-500">Total Jobs</p>
+            <p className="text-2xl font-bold">{jobs.length}</p>
           </div>
         </div>
 
@@ -474,11 +450,8 @@ export default function RecruiterDashboard() {
           </div>
           <div>
             <p className="text-sm text-gray-500">Total Candidates</p>
-            <p className="text-2xl font-bold">
-              {totalUniqueCandidates}
-              <span className="text-blue-600 underline ml-2 text-sm font-light transition-colors duration-200 hover:text-blue-800 focus:outline-none">
-                click here
-              </span>
+            <p className="text-2xl font-bold">{totalUniqueCandidates}
+              <span className="text-blue-600 underline ml-2 text-sm font-light transition-colors duration-200 hover:text-blue-800 focus:outline-none">click here</span>
             </p>
           </div>
         </div>
@@ -657,7 +630,7 @@ export default function RecruiterDashboard() {
             <button
               type="submit"
               disabled={posting}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors disabled:opacity-70 flex items-center"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors disabled:opacity-70 flex items-center cursor-pointer"
             >
               {posting ? "Posting..." : "Post Job"}
             </button>
@@ -674,7 +647,7 @@ export default function RecruiterDashboard() {
                   <h3 className="text-lg font-medium text-gray-700 mb-2">
                     {searchTerm
                       ? "No matching jobs found"
-                      : "You have not posted any jobs yet"}
+                      : "No jobs posted yet"}
                   </h3>
                   <p className="text-gray-500">
                     {searchTerm
@@ -687,46 +660,54 @@ export default function RecruiterDashboard() {
                   .slice()
                   .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
                   .map((job) => (
-                    <div
-                      key={job._id}
-                      className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200"
-                    >
-                      <div className="p-6">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="text-lg font-semibold text-gray-800">
-                              {job.title}
-                            </h3>
-                            <p className="text-gray-600 mt-2 line-clamp-2">
-                              {job.description}
-                            </p>
-                            <div className="mt-3 flex items-center text-sm text-gray-500">
-                              <span className="mr-4">
-                                {job.applicants?.length || 0} applicants
-                              </span>
-                              <span>Posted on {formatDate(job.createdAt)}</span>
-                            </div>
+                    <div key={job._id} className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
+                    <div className="p-6">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-800">
+                            {job.title}
+                          </h3>
+                          <p className="text-gray-600 mt-2 line-clamp-2">
+                            {job.description}
+                          </p>
+                          <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                             <span>
+                              <strong>Applicants:</strong> {job.applicants?.length || 0}
+                            </span>
+                            <span>
+                              <strong>Type:</strong> {job.type}
+                            </span>
+                            <span>
+                              <strong>Salary:</strong> {job.salary ? `${job.salary / 100000} LPA` : 'N/A'}
+                            </span>
+                            <span>
+                              <strong>Experience:</strong> {job.experience || 'N/A'}
+                            </span>
+                           
+                            <span>
+                              <strong>Posted on:</strong> {formatDate(job.createdAt)}
+                            </span>
                           </div>
-                          <select
-                            value={job.status}
-                            onChange={(e) =>
-                              handleJobStatusChange(job._id, e.target.value)
-                            }
-                            className={`px-3 py-1 rounded-full text-sm font-medium border-transparent focus:ring-1  ${
-                              jobStatusColors[job.status]?.bg || "bg-gray-100"
-                            } ${
-                              jobStatusColors[job.status]?.text ||
-                              "text-gray-800"
-                            }`}
-                          >
-                            <option value="active">Active</option>
-                            <option value="closed">Closed</option>
-                            <option value="archived">Archived</option>
-                          </select>
                         </div>
+                        <select
+                          value={job.status}
+                          onChange={(e) =>
+                            handleJobStatusChange(job._id, e.target.value)
+                          }
+                          className={`px-3 py-1 rounded-full text-sm font-medium border-transparent focus:ring-1  ${
+                            jobStatusColors[job.status]?.bg || "bg-gray-100"
+                          } ${
+                            jobStatusColors[job.status]?.text || "text-gray-800"
+                          }`}
+                        >
+                          <option value="active">Active</option>
+                          <option value="closed">Closed</option>
+                          <option value="archived">Archived</option>
+                        </select>
                       </div>
                     </div>
-                  ))
+                  </div>
+                ))
               )}
             </>
           )}
@@ -785,18 +766,15 @@ export default function RecruiterDashboard() {
                       >
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                           <div className="flex items-start space-x-4 flex-1">
-                            {/* {console.log(applicant)} */}
-                            {applicant?.userId?.profilePhoto ? (
-                              <img
-                                src={`${process.env.NEXT_PUBLIC_API_URL}${applicant.userId.profilePhoto}`}
-                                alt={applicant.name}
-                                className="w-10 h-10 rounded-full object-cover"
-                              />
+                          {/* {console.log(applicant)} */}
+                            {applicant?.userId && applicant.userId.profilePhoto ? (
+                              <img src={`${process.env.NEXT_PUBLIC_API_URL}${applicant.userId.profilePhoto}`} alt={applicant?.name} className="w-10 h-10 rounded-full object-cover" />
                             ) : (
                               <div className="bg-gray-200 rounded-full w-10 h-10 flex items-center justify-center text-gray-600">
                                 <FiUser className="text-lg" />
                               </div>
                             )}
+                           
                             <div className="flex-1">
                               <div className="flex items-center">
                                 <h4 className="font-medium text-gray-800 mr-2">
@@ -814,8 +792,7 @@ export default function RecruiterDashboard() {
                                 {applicant.email}
                               </div>
                               <div className="flex items-center text-gray-400 text-xs mt-2">
-                                <FiClock className="mr-1" /> Applied on{" "}
-                                {formatDate(applicant.appliedDate)}
+                                <FiClock className="mr-1"/> Applied on {formatDate(applicant.appliedDate)}
                               </div>
                             </div>
                           </div>

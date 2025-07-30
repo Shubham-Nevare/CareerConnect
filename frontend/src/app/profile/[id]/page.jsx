@@ -24,20 +24,49 @@ export default function JobSeekerProfilePage() {
   const router = useRouter();
   const { id } = useParams();
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
   const [showPdf, setShowPdf] = useState(false);
   const { token } = useAuth();
-  
+
   useEffect(() => {
     async function fetchUser() {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${id}`);
-      if (res.ok) {
-        setUser(await res.json());
+      setLoading(true);
+      setNotFound(false);
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${id}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (!data || Object.keys(data).length === 0) {
+            setNotFound(true);
+            setUser(null);
+          } else {
+            setUser(data);
+          }
+        } else if (res.status === 404) {
+          setNotFound(true);
+          setUser(null);
+        } else {
+          setUser(null);
+        }
+      } catch {
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
     }
     fetchUser();
   }, [id]);
 
-  if (!user) return <div className="p-8">Loading...</div>;
+  if (loading) return <div className="p-8">Loading...</div>;
+if (notFound || !user) {
+  return (
+    <div className="flex flex-col justify-center items-center h-screen w-screen bg-gray-50">
+      <div className="text-3xl font-bold text-gray-400 mb-2">Not Found</div>
+      <div className="text-gray-500 text-lg">This user does not exist or has deleted their profile.</div>
+    </div>
+  );
+}
 
   // Helper to get full resume URL
   const getResumeUrl = (cacheBust = false) => {
@@ -88,7 +117,7 @@ export default function JobSeekerProfilePage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="max-w-6xl mx-auto px-4 py-15">
      
       {/* Profile Header */}
       <div className="flex items-center gap-4 mb-8">
@@ -294,13 +323,14 @@ export default function JobSeekerProfilePage() {
                         >
                           Back to Profile
                         </button>
-                        <div className="w-full" style={{ height: "90vh" }}>
+                        <div className="w-full" style={{ aspectRatio: '16/9', height: '70vh', maxHeight: '75vh', overflow: 'hidden' }}>
                           <iframe
                             src={getResumeUrl(true)} // Pass true to bust cache for viewing
                             title="Resume PDF"
                             width="100%"
                             height="100%"
-                            style={{ border: 0 }}
+                            style={{ border: 0, width: '100%', height: '100%', display: 'block' }}
+                            allowFullScreen
                           />
                         </div>
                       </div>

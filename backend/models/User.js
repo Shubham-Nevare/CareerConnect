@@ -25,7 +25,10 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Job",
     }, ],
-    // Jobseeker profile (unchanged)
+    // Jobseeker applications (top-level)
+    applications: [
+        { type: mongoose.Schema.Types.ObjectId, ref: "Application" },
+    ],
     profile: {
         basicInfo: {
             name: String,
@@ -79,9 +82,7 @@ const userSchema = new mongoose.Schema({
             visibility: String,
         },
         savedJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Job" }],
-        applications: [
-            { type: mongoose.Schema.Types.ObjectId, ref: "Application" },
-        ],
+       
     },
 }, { timestamps: true });
 

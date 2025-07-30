@@ -190,7 +190,7 @@ export default function JobDetailsPage() {
         />
       </Head>
 
-      <main className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+      <main className="min-h-screen bg-gray-50 py-14 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="mb-6">
             <button
@@ -234,92 +234,6 @@ export default function JobDetailsPage() {
                       <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
                         {job.type}
                       </div>
-                      {/* <button
-                        className={`ml-2 px-4 py-2 rounded-md font-medium transition ${
-                          !user
-                            ? "bg-gray-500 text-white cursor-not-allowed"
-                            : userApplication?.userId ===
-                                (user?._id || user?.id) &&
-                              userApplication?.jobId === job._id
-                            ? "bg-gray-400 text-white cursor-not-allowed"
-                            : "bg-blue-600 text-white hover:bg-blue-700"
-                        }`}
-                        onClick={async () => {
-                          // Case 1: User not logged in
-                          if (!user) {
-                            alert("Please log in to apply.");
-                            return;
-                          }
-
-                          // Case 2: Already applied
-                          if (
-                            userApplication?.userId === (user._id || user.id) &&
-                            userApplication?.jobId === job._id
-                          ) {
-                            alert("Already Applied.");
-                            return;
-                          }
-
-                          // Case 3: Apply for the job
-                          try {
-                            const res = await fetch(
-                              `${process.env.NEXT_PUBLIC_API_URL}/jobs/${job._id}/apply`,
-                              {
-                                method: "POST",
-                                headers: {
-                                  "Content-Type": "application/json",
-                                  Authorization: `Bearer ${token}`, // Add auth token if needed
-                                },
-                                body: JSON.stringify({
-                                  userId: user._id || user.id,
-                                  name: user.name, // Add name
-                                  email: user.email, // Add email
-                                  jobId: job._id,
-                                  companyId: job.company?._id,
-                                  status: "applied",
-                                }),
-                              }
-                            );
-
-                            if (res.ok) {
-                              // Update UI immediately for better UX
-                              setUserApplication({
-                                userId: user._id || user.id,
-                                jobId: job._id,
-                                status: "applied",
-                              });
-
-                              // Optional: Show toast instead of alert
-                              alert("Application submitted successfully!");
-                            } else {
-                              const errorData = await res.json();
-                              alert(
-                                errorData.message ||
-                                  "Failed to submit application"
-                              );
-                            }
-                          } catch (err) {
-                            console.error("Application error:", err);
-                            alert("Network error. Please try again.");
-                          }
-                        }}
-                        disabled={
-                          !user ||
-                          (userApplication?.userId ===
-                            (user?._id || user?.id) &&
-                            userApplication?.jobId === job._id)
-                        }
-                      >
-                        {!user
-                          ? "Apply" // Shows "Apply" but will show login prompt when clicked
-                          : userApplication?.userId === (user._id || user.id) &&
-                            userApplication?.jobId === job._id
-                          ? userApplication.status
-                            ? userApplication.status.charAt(0).toUpperCase() +
-                              userApplication.status.slice(1)
-                            : "Applied"
-                          : "Apply"}
-                      </button> */}
 
                       <button
                         className={`ml-2 px-4 py-2 rounded-md font-medium transition ${

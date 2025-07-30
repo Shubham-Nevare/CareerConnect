@@ -100,7 +100,7 @@ export default function JobsPage() {
       {/* Hero Search Section */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold text-white mb-2">
+          <h1 className="text-3xl font-bold text-white mb-2 pt-4">
             Find Your Dream Job
           </h1>
           <p className="text-lg text-blue-100 mb-8">
@@ -280,6 +280,7 @@ export default function JobsPage() {
                             <p className="text-gray-600 mt-1">
                               {job.company?.name || "Company Confidential"}
                             </p>
+                           
                             <div className="flex flex-wrap gap-2 mt-3">
                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                 <FiMapPin className="mr-1" /> {job.location}
@@ -298,6 +299,11 @@ export default function JobsPage() {
                                 </span>
                               )}
                             </div>
+                             {Array.isArray(job.requirements) && job.requirements.length > 0 && (
+                              <div className="text-gray-700 text-sm mt-2">
+                                <span className="font-medium">Requirements:</span> {job.requirements.join(', ')}
+                              </div>
+                            )}
                           </div>
                         </div>
                         <div className="flex flex-col items-start md:items-end gap-2">
