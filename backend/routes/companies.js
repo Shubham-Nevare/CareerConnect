@@ -6,14 +6,15 @@ const path = require('path');
 
 const logoUpload = multer({ dest: path.join(__dirname, '../uploads/company_logos/') });
 
-// Create company
+// Create company (logo as base64 string)
 router.post('/', async(req, res) => {
     try {
-        // console.log('Company create req.body:', req.body);
-        const company = new Company({
-            ...req.body,
-            recruiters: req.body.recruiters || []
-        });
+        const companyData = { ...req.body, recruiters: req.body.recruiters || [] };
+        // If logo is present and is base64, store as is
+        if (req.body.logo && req.body.logo.startsWith('data:image')) {
+            companyData.logo = req.body.logo;
+        }
+        const company = new Company(companyData);
         await company.save();
         res.status(201).json(company);
     } catch (err) {
@@ -38,10 +39,14 @@ router.get('/:id', async(req, res) => {
     }
 });
 
-// Update company by ID
+// Update company by ID (logo as base64 string)
 router.put('/:id', async(req, res) => {
     try {
-        const company = await Company.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const updateData = { ...req.body };
+        if (req.body.logo && req.body.logo.startsWith('data:image')) {
+            updateData.logo = req.body.logo;
+        }
+        const company = await Company.findByIdAndUpdate(req.params.id, updateData, { new: true });
         if (!company) return res.status(404).json({ error: 'Company not found' });
         res.json(company);
     } catch (err) {
@@ -78,11 +83,15 @@ router.delete('/:id', async(req, res) => {
     }
 });
 
-// Company logo upload endpoint
-router.post('/:id/logo', logoUpload.single('logo'), async(req, res) => {
+// Company logo upload endpoint (accept base64 string)
+router.post('/:id/logo', async(req, res) => {
     try {
+        // Expect { logo: 'data:image/png;base64,...' } in body
+        if (!req.body.logo || !req.body.logo.startsWith('data:image')) {
+            return res.status(400).json({ error: 'Logo must be a base64 image string' });
+        }
         const company = await Company.findByIdAndUpdate(
-            req.params.id, { logo: `/uploads/company_logos/${req.file.filename}` }, { new: true }
+            req.params.id, { logo: req.body.logo }, { new: true }
         );
         if (!company) return res.status(404).json({ error: 'Company not found' });
         res.json(company);

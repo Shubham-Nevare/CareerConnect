@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
 app.use(cors({
     origin: [
         'https://career-connect-jobs.vercel.app',
-        'http://localhost:3000','http://localhost:3000'
+        'http://localhost:3000','http://localhost:3001'
     ],
     credentials: true
 }));
@@ -29,6 +29,7 @@ app.use(cors({
 app.use(express.json());
 
 // Serve uploads directory as static files
+// No need to serve uploads for company logo as base64
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Add a dedicated route for serving resumes with consistent download filename
@@ -57,6 +58,7 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
 });
 
 app.use('/users', usersRouter);
+// Update companiesRouter to handle base64 logo
 app.use('/companies', companiesRouter);
 app.use('/jobs', jobsRouter);
 app.use('/applications', applicationsRouter);

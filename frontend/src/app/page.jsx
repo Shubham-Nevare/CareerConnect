@@ -318,7 +318,7 @@ export default function HomePage() {
               latestJobs.map((job) => (
                 <div
                   key={job._id || job.id}
-                  className="job-card bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-blue-200"
+                  className="job-card bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-blue-200 md:w-[850px] justify-self-center	"
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between">
                     <div className="flex items-start space-x-4 mb-4 md:mb-0">
@@ -333,7 +333,7 @@ export default function HomePage() {
                           <div className="text-2xl text-gray-500">🏢</div>
                         )}
                       </div>
-                      <div>
+                      <div className="mr-[6px]">
                         <h3 className="font-bold text-lg hover:text-blue-600 transition cursor-pointer">
                           {job.title}
                         </h3>
@@ -353,7 +353,7 @@ export default function HomePage() {
                               {job.experience}
                             </span>
                           )}
-                          {Array.isArray(job.requirements) &&
+                          {/* {Array.isArray(job.requirements) &&
                             job.requirements.length > 0 &&
                             job.requirements.map((requirements, i) => (
                               <span
@@ -362,7 +362,21 @@ export default function HomePage() {
                               >
                                 {requirements}
                               </span>
-                            ))}
+                            ))} */}
+                            {job.description && (
+                              <div className="text-gray-700 text-sm mt-2">
+                                <span className="font-medium">Description:</span>{" "}
+                                <span>
+                                  {
+                                    job.description
+                                      .split(" ")
+                                      .slice(0, 23)
+                                      .join(" ")
+                                  }
+                                  {job.description.split(" ").length > 23 ? "..." : ""}
+                                </span>
+                              </div>
+                            )}
                         </div>
                       </div>
                     </div>
@@ -374,7 +388,7 @@ export default function HomePage() {
                       </span>
                       <Link
                         href={`/jobs/${job._id || job.id}`}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition w-full md:w-auto text-center"
+                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition w-full md:w-32 text-center"
                       >
                         Apply Now
                       </Link>
