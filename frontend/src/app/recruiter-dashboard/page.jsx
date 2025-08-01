@@ -780,7 +780,7 @@ export default function RecruiterDashboard() {
                               <strong>Type:</strong> {job.type}
                             </span>
                             <span>
-                              <strong>Salary:</strong> {typeof job.salary === 'number' ? `${job.salary} LPA` : 'N/A'}
+                              <strong>Salary:</strong> {job.salary} LPA
                             </span>
                             <span>
                               <strong>Experience:</strong> {job.experience || 'N/A'}

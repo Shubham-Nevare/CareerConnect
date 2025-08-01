@@ -138,6 +138,7 @@ export default function JobsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalJobs, setTotalJobs] = useState(0);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [expanded, setExpanded] = useState(false); // ✅ useState for toggle
 
   // Add this helper function near the top of the file (after imports):
   function timeAgo(date) {
@@ -412,9 +413,23 @@ export default function JobsPage() {
                                 </span>
                               )}
                             </div>
-                             {Array.isArray(job.requirements) && job.requirements.length > 0 && (
+                             {/* {Array.isArray(job.requirements) && job.requirements.length > 0 && (
                               <div className="text-gray-700 text-sm mt-2">
                                 <span className="font-medium">Requirements:</span> {job.requirements.join(', ')}
+                              </div>
+                            )} */}
+                            {job.description && (
+                              <div className="text-gray-700 text-sm mt-2">
+                                <span className="font-medium">Description:</span>{" "}
+                                <span>
+                                  {
+                                    job.description
+                                      .split(" ")
+                                      .slice(0, 23)
+                                      .join(" ")
+                                  }
+                                  {job.description.split(" ").length > 23 ? "..." : ""}
+                                </span>
                               </div>
                             )}
                           </div>
