@@ -18,7 +18,13 @@ app.get('/', (req, res) => {
 });
 
 
-app.use(cors());
+app.use(cors({
+    origin: [
+        'https://career-connect-jobs.vercel.app',
+        'http://localhost:3000','http://localhost:3000'
+    ],
+    credentials: true
+}));
 
 app.use(express.json());
 

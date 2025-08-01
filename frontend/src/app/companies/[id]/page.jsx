@@ -110,9 +110,9 @@ const CompanyProfilePage = () => {
       </div>
       <div className="mb-8">
         <h2 className="text-lg font-semibold text-gray-700 mb-2">Jobs Posted</h2>
-        {company.jobs && company.jobs.length > 0 ? (
+        {company.jobs && company.jobs.filter((job) => job.status === "active").length > 0 ? (
           <ul className="list-disc pl-6">
-            {company.jobs.map((job) => (
+            {company.jobs.filter((job) => job.status === "active").map((job) => (
               <li key={job._id} className="mb-1">
                 <Link href={`/jobs/${job._id}`} className="text-blue-600 hover:underline">
                   {job.title}
@@ -122,7 +122,7 @@ const CompanyProfilePage = () => {
             ))}
           </ul>
         ) : (
-          <div className="text-gray-400">No jobs posted.</div>
+          <div className="text-gray-400">No active jobs posted.</div>
         )}
       </div>
       <div className="mb-8">
@@ -131,7 +131,11 @@ const CompanyProfilePage = () => {
           <ul className="list-disc pl-6">
             {company.recruiters.map((recruiter) => (
               <li key={recruiter._id || recruiter} className="mb-1">
-                {recruiter.name || recruiter.email || recruiter._id || recruiter}
+                {recruiter.name && <span className="font-medium text-gray-800">{recruiter.name}</span>}
+                {recruiter.email && (
+                  <span className="ml-2 text-gray-500">{recruiter.email}</span>
+                )}
+                {!recruiter.name && !recruiter.email && (recruiter._id || recruiter)}
               </li>
             ))}
           </ul>

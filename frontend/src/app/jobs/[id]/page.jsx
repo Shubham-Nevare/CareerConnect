@@ -220,8 +220,92 @@ export default function JobDetailsPage() {
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="p-6 border-b border-gray-200">
-                  <div className="flex justify-between items-start">
-                    <div>
+                  <div className="relative">
+                    {/* Mobile: job type badge absolute top right */}
+                    <div className="absolute right-0 top-0 mt-2 mr-2 sm:hidden z-10">
+                      <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                        {job.type}
+                      </div>
+                    </div>
+                    {/* Desktop: inline row */}
+                    <div className="hidden sm:flex justify-between items-start">
+                      <div>
+                        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                          {job.title}
+                        </h1>
+                        <div className="flex items-center text-gray-600 mb-4">
+                          <span className="mr-4">{job.company?.name}</span>
+                          <span>{job.location}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                          {job.type}
+                        </div>
+                        {/* Desktop Apply Button */}
+                        <button
+                          className={`ml-2 px-4 py-2 rounded-md font-medium transition ${
+                            !user
+                              ? "bg-gray-500 text-white cursor-pointer"
+                              : userApplication
+                              ? "bg-gray-400 text-white cursor-not-allowed"
+                              : "bg-blue-600 text-white hover:bg-blue-700"
+                          }`}
+                          onClick={async () => {
+                            if (!user) {
+                              router.push("/login");
+                              return;
+                            }
+                            if (userApplication) {
+                              alert("You have already applied for this job.");
+                              return;
+                            }
+                            try {
+                              const res = await fetch(
+                                `${process.env.NEXT_PUBLIC_API_URL}/jobs/${job._id}/apply`,
+                                {
+                                  method: "POST",
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                    Authorization: `Bearer ${token}`,
+                                  },
+                                  body: JSON.stringify({
+                                    userId: user._id || user.id,
+                                    name: user.name,
+                                    email: user.email,
+                                    jobId: job._id,
+                                    companyId: job.company?._id,
+                                    status: "applied",
+                                  }),
+                                }
+                              );
+                              if (res.ok) {
+                                alert("Application submitted successfully.");
+                                setUserApplication({
+                                  userId: user._id || user.id,
+                                  jobId: job._id,
+                                  status: "applied",
+                                });
+                              } else {
+                                const errData = await res.json();
+                                alert(errData.message || "Application failed.");
+                              }
+                            } catch (err) {
+                              alert("Something went wrong.");
+                            }
+                          }}
+                          disabled={!!userApplication}
+                        >
+                          {!user
+                            ? "Login to Apply"
+                            : userApplication
+                            ? "Already Applied"
+                            : "Apply"}
+                        </button>
+                      </div>
+                    </div>
+                    {/* Mobile: title and company/location */}
+                    <div className="sm:hidden">
                       <h1 className="text-2xl font-bold text-gray-900 mb-2">
                         {job.title}
                       </h1>
@@ -230,86 +314,86 @@ export default function JobDetailsPage() {
                         <span>{job.location}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                        {job.type}
-                      </div>
-
-                      <button
-                        className={`ml-2 px-4 py-2 rounded-md font-medium transition ${
-                          !user
-                            ? "bg-gray-500 text-white cursor-pointer"
-                            : userApplication
-                            ? "bg-gray-400 text-white cursor-not-allowed"
-                            : "bg-blue-600 text-white hover:bg-blue-700"
-                        }`}
-                        onClick={async () => {
-                          if (!user) {
-                            router.push("/login"); // or alert("Login to apply")
-                            return;
-                          }
-
-                          if (userApplication) {
-                            alert("You have already applied for this job.");
-                            return;
-                          }
-
-                          // Submit application
-                          try {
-                            const res = await fetch(
-                              `${process.env.NEXT_PUBLIC_API_URL}/jobs/${job._id}/apply`,
-                              {
-                                method: "POST",
-                                headers: {
-                                  "Content-Type": "application/json",
-                                  Authorization: `Bearer ${token}`,
-                                },
-                                body: JSON.stringify({
-                                  userId: user._id || user.id,
-                                  name: user.name,
-                                  email: user.email,
-                                  jobId: job._id,
-                                  companyId: job.company?._id,
-                                  status: "applied",
-                                }),
-                              }
-                            );
-
-                            if (res.ok) {
-                              alert("Application submitted successfully.");
-                              setUserApplication({
-                                userId: user._id || user.id,
-                                jobId: job._id,
-                                status: "applied",
-                              });
-                            } else {
-                              const errData = await res.json();
-                              alert(errData.message || "Application failed.");
-                            }
-                          } catch (err) {
-                            alert("Something went wrong.");
-                          }
-                        }}
-                        disabled={!!userApplication}
-                      >
-                        {!user
-                          ? "Login to Apply"
-                          : userApplication
-                          ? "Already Applied"
-                          : "Apply"}
-                      </button>
-                    </div>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mt-2">
                     <span className="text-lg font-semibold text-gray-900">
-                      {job.salary / 100000} LPA
+                      {job.salary} LPA
                     </span>
                     <span className="text-lg font-semibold text-gray-900">
                       {job.experience}
                     </span>
                     <span className="text-sm text-gray-500">
-                      Posted {job.posted}
+                      Posted {new Date(job.createdAt).toLocaleString(undefined, {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
                     </span>
+                  </div>
+                  {/* Mobile Apply Button below post time */}
+                  <div className="block sm:hidden mt-4">
+                    <button
+                      className={`w-full px-4 py-3 rounded-md font-bold transition text-base ${
+                        !user
+                          ? "bg-gray-500 text-white cursor-pointer"
+                          : userApplication
+                          ? "bg-gray-400 text-white cursor-not-allowed"
+                          : "bg-blue-600 text-white hover:bg-blue-700"
+                      }`}
+                      onClick={async () => {
+                        if (!user) {
+                          router.push("/login");
+                          return;
+                        }
+                        if (userApplication) {
+                          alert("You have already applied for this job.");
+                          return;
+                        }
+                        try {
+                          const res = await fetch(
+                            `${process.env.NEXT_PUBLIC_API_URL}/jobs/${job._id}/apply`,
+                            {
+                              method: "POST",
+                              headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${token}`,
+                              },
+                              body: JSON.stringify({
+                                userId: user._id || user.id,
+                                name: user.name,
+                                email: user.email,
+                                jobId: job._id,
+                                companyId: job.company?._id,
+                                status: "applied",
+                              }),
+                            }
+                          );
+                          if (res.ok) {
+                            alert("Application submitted successfully.");
+                            setUserApplication({
+                              userId: user._id || user.id,
+                              jobId: job._id,
+                              status: "applied",
+                            });
+                          } else {
+                            const errData = await res.json();
+                            alert(errData.message || "Application failed.");
+                          }
+                        } catch (err) {
+                          alert("Something went wrong.");
+                        }
+                      }}
+                      disabled={!!userApplication}
+                    >
+                      {!user
+                        ? "Login to Apply"
+                        : userApplication
+                        ? "Already Applied"
+                        : "Apply"}
+                    </button>
                   </div>
                 </div>
 
@@ -317,7 +401,7 @@ export default function JobDetailsPage() {
                   <h2 className="text-xl font-semibold mb-4">
                     Job Description
                   </h2>
-                  <p className="text-gray-700 mb-6">{job.description}</p>
+                  <p className="text-gray-700 mb-6 whitespace-pre-line">{job.description}</p>
 
                   <h3 className="text-lg font-semibold mb-3">
                     Responsibilities
@@ -353,9 +437,9 @@ export default function JobDetailsPage() {
                   )}
 
                   <h3 className="text-lg font-semibold mb-3">
-                    About {job.company?.name}
+                    About {job?.company?.name}
                   </h3>
-                  <p className="text-gray-700">{job.companyDescription}</p>
+                  <p className="text-gray-700 whitespace-pre-line">{job?.company?.description}</p>
                 </div>
               </div>
 

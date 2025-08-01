@@ -78,10 +78,12 @@ export default function RecruiterDashboard() {
     location: "",
     salary: "",
     type: "Full-time",
-    requirements: "",
-    responsibilities: "",
+    requirements: [],
+    responsibilities: [],
     experience: "",
   });
+  const [requirementsInput, setRequirementsInput] = useState("");
+  const [responsibilityInput, setResponsibilityInput] = useState("");
   const [posting, setPosting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -161,9 +163,55 @@ export default function RecruiterDashboard() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+    if (name === "responsibilities") {
+      setResponsibilityInput(value);
+    } else if (name === "requirements") {
+      setRequirementsInput(value);
+    } else {
+      setForm({ ...form, [name]: value });
+    }
     setError("");
     setSuccess("");
+  };
+
+  const handleAddRequirements = (e) => {
+    e.preventDefault();
+    const trimmed = requirementsInput.trim();
+    if (trimmed) {
+      setForm((prev) => ({
+        ...prev,
+        requirements: [...prev.requirements, trimmed],
+      }));
+      setRequirementsInput("");
+    }
+  };
+
+  const handleRemoveRequirements = (idx) => {
+    setForm((prev) => ({
+      ...prev,
+      requirements: prev.requirements.filter((_, i) => i !== idx),
+    }));
+  };
+
+
+
+  const handleAddResponsibility = (e) => {
+    e.preventDefault();
+    const trimmed = responsibilityInput.trim();
+    if (trimmed) {
+      setForm((prev) => ({
+        ...prev,
+        responsibilities: [...prev.responsibilities, trimmed],
+      }));
+      setResponsibilityInput("");
+    }
+  };
+
+  const handleRemoveResponsibility = (idx) => {
+    setForm((prev) => ({
+      ...prev,
+      responsibilities: prev.responsibilities.filter((_, i) => i !== idx),
+    }));
   };
 
   const handlePostJob = async (e) => {
@@ -173,7 +221,7 @@ export default function RecruiterDashboard() {
       !form.title.trim() ||
       !form.description.trim() ||
       !form.location.trim() ||
-      !form.salary.trim()
+      !form.salary.toString().trim()
     ) {
       setError("All fields are required");
       return;
@@ -200,15 +248,13 @@ export default function RecruiterDashboard() {
         },
         body: JSON.stringify({
           title: form.title.trim(),
-          description: form.description.trim(),
+          description: form.description,
           location: form.location.trim(),
-          salary: String(Math.round(parseFloat(form.salary) * 100000)), // Convert LPA to INR, e.g. 5 -> 500000
+          salary: parseFloat(form.salary), // Store as float (LPA)
           company: company._id,
           type: form.type,
-          requirements: form.requirements.split(",").map((r) => r.trim()),
-          responsibilities: form.responsibilities
-            .split(",")
-            .map((r) => r.trim()),
+          requirements: form.requirements,
+          responsibilities: form.responsibilities,
           experience: form.experience,
           recruiterId: user._id || user.id,
         }),
@@ -222,10 +268,12 @@ export default function RecruiterDashboard() {
         location: "",
         salary: "",
         type: "Full-time",
-        requirements: "",
-        responsibilities: "",
+        requirements: [],
+        responsibilities: [],
         experience: "",
       });
+      setRequirementsInput("");
+      setResponsibilityInput("");
       if (typeof window.fetchJobs === "function") {
         window.fetchJobs();
       }
@@ -605,27 +653,81 @@ export default function RecruiterDashboard() {
             </div>
             <div className="mb-4">
               <label className="block text-gray-700 font-medium mb-2">
-                Requirements (comma separated)
+                Skills / Requirements
               </label>
-              <input
-                name="requirements"
-                value={form.requirements}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="e.g. React, Node.js"
-              />
+              <div className="flex gap-2 mb-2">
+                <input
+                  name="requirements"
+                  value={requirementsInput}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter a skill or requirement"
+                />
+                <button
+                  type="button"
+                  onClick={handleAddRequirements}
+                  className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                  disabled={!requirementsInput.trim()}
+                >
+                  +
+                </button>
+              </div>
+              {form.requirements.length > 0 && (
+                <ul className="list-disc pl-5 space-y-1">
+                  {form.requirements.map((item, idx) => (
+                    <li key={idx} className="flex items-center justify-between">
+                      <span>{item}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveRequirements(idx)}
+                        className="ml-2 text-red-500 hover:text-red-700 text-xs"
+                        title="Remove"
+                      >
+                        Remove
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
             <div className="mb-4">
               <label className="block text-gray-700 font-medium mb-2">
-                Responsibilities (comma separated)
+                Responsibilities
               </label>
-              <input
-                name="responsibilities"
-                value={form.responsibilities}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="e.g. Code reviews, Mentoring"
-              />
+              <div className="flex gap-2 mb-2">
+                <input
+                  name="responsibilities"
+                  value={responsibilityInput}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter a responsibility point"
+                />
+                <button
+                  type="button"
+                  onClick={handleAddResponsibility}
+                  className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                  disabled={!responsibilityInput.trim()}
+                >
+                  +
+                </button>
+              </div>
+              {form.responsibilities.length > 0 && (
+                <ul className="list-disc pl-5 space-y-1">
+                  {form.responsibilities.map((item, idx) => (
+                    <li key={idx} className="flex items-center justify-between">
+                      <span>{item}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveResponsibility(idx)}
+                        className="ml-2 text-red-500 hover:text-red-700 text-xs"
+                        title="Remove"
+                      >
+                        Remove
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
             <button
               type="submit"
@@ -667,7 +769,7 @@ export default function RecruiterDashboard() {
                           <h3 className="text-lg font-semibold text-gray-800">
                             {job.title}
                           </h3>
-                          <p className="text-gray-600 mt-2 line-clamp-2">
+                          <p className="text-gray-600 mt-2 line-clamp-2 whitespace-pre-line">
                             {job.description}
                           </p>
                           <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-gray-500">
@@ -678,7 +780,7 @@ export default function RecruiterDashboard() {
                               <strong>Type:</strong> {job.type}
                             </span>
                             <span>
-                              <strong>Salary:</strong> {job.salary ? `${job.salary / 100000} LPA` : 'N/A'}
+                              <strong>Salary:</strong> {typeof job.salary === 'number' ? `${job.salary} LPA` : 'N/A'}
                             </span>
                             <span>
                               <strong>Experience:</strong> {job.experience || 'N/A'}

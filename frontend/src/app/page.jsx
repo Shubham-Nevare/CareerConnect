@@ -346,7 +346,7 @@ export default function HomePage() {
                             {job.type}
                           </span>
                           <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                            {job.salary / 100000} LPA
+                            {job.salary} LPA
                           </span>
                           {job.experience && (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 ml-2">

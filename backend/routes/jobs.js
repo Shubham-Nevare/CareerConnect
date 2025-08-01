@@ -85,7 +85,7 @@ router.get('/', async(req, res) => {
     // The recruiter dashboard route handles other statuses for logged-in recruiters.
 
     const [jobs, total] = await Promise.all([
-        Job.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).populate('company', 'name logo industry website location employees experience'),
+        Job.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).populate('company', 'name logo industry website location employees experience description'),
         Job.countDocuments(query)
     ]);
 
@@ -115,7 +115,7 @@ router.get('/recruiter', async(req, res) => {
         }
 
         const recruiterJobs = await Job.find({ company: recruiter.company })
-            .populate('company', 'name logo industry website location employees experience')
+            .populate('company', 'name logo industry website location employees experience description')
             .populate({
                 path: 'applicants',
                 populate: {

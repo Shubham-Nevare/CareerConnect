@@ -1,5 +1,116 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+// MobileFiltersModal component must be defined before JobsPage
+function MobileFiltersModal({ filters, setFilters, clearFilters, onClose }) {
+  const [localFilters, setLocalFilters] = useState(filters);
+
+  useEffect(() => {
+    setLocalFilters(filters);
+  }, [filters]);
+
+  const handleLocalChange = (e) => {
+    const { name, value } = e.target;
+    setLocalFilters((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleApply = () => {
+    setFilters(localFilters);
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto" role="dialog" aria-modal="true">
+      {/* Overlay */}
+      <div
+        className="fixed inset-0 bg-opacity-30 backdrop-blur-sm transition-opacity"
+        aria-hidden="true"
+        onClick={onClose}
+      ></div>
+      {/* Modal */}
+      <div className="relative bg-white rounded-lg px-4 pt-5 pb-4 mx-4 text-left overflow-hidden shadow-xl transform transition-all w-full max-w-md  sm:p-6 border  border-black">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-medium text-gray-900">Filters</h3>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-500"
+            aria-label="Close filter modal"
+          >
+            <FiX className="h-6 w-6" />
+          </button>
+        </div>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Job Type
+            </label>
+            <select
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              value={localFilters.type}
+              onChange={handleLocalChange}
+              name="type"
+            >
+              <option value="">All Types</option>
+              <option value="Full-time">Full-time</option>
+              <option value="Part-time">Part-time</option>
+              <option value="Contract">Contract</option>
+              <option value="Internship">Internship</option>
+              <option value="Remote">Remote</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Salary Range
+            </label>
+            <select
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              value={localFilters.salary}
+              onChange={handleLocalChange}
+              name="salary"
+            >
+              <option value="">All Ranges</option>
+              <option value="below-3">Below 3 LPA</option>
+              <option value="3-6">3-6 LPA</option>
+              <option value="6-10">6-10 LPA</option>
+              <option value="10-plus">10+ LPA</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Experience Level
+            </label>
+            <select
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              value={localFilters.experience}
+              onChange={handleLocalChange}
+              name="experience"
+            >
+              <option value="">All Levels</option>
+              <option value="Fresher">Fresher</option>
+              <option value="1-3 years">1-3 years</option>
+              <option value="3-5 years">3-5 years</option>
+              <option value="5+ years">5+ years</option>
+            </select>
+          </div>
+        </div>
+        <div className="mt-5 sm:mt-6 grid grid-cols-2 gap-3">
+          <button
+            onClick={() => { clearFilters(); onClose(); }}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+          >
+            Clear All
+          </button>
+          <button
+            onClick={handleApply}
+            className="w-full px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+          >
+            Apply Filters
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 import Link from "next/link";
 import {
   FiSearch,
@@ -11,6 +122,7 @@ import {
   FiX,
 } from "react-icons/fi";
 import { LuIndianRupee } from "react-icons/lu";
+
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState([]);
@@ -262,15 +374,16 @@ export default function JobsPage() {
                     <div className="p-6">
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div className="flex items-start gap-4">
-                          <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+                          <div className="w-14 h-14 min-w-[56px] min-h-[56px] max-w-[56px] max-h-[56px] bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
                             {job.company?.logo ? (
                               <img
                                 src={`${process.env.NEXT_PUBLIC_API_URL}${job.company.logo}`}
                                 alt={job.company?.name || "Company Logo"}
-                                className="w-full h-full object-contain"
+                                className="object-contain w-12 h-12 min-w-[54px] min-h-[54px] max-w-[54px] max-h-[54px] rounded-lg"
+                                style={{ width: '54px', height: '54px' }}
                               />
                             ) : (
-                              <div className="text-2xl text-gray-500">🏢</div>
+                              <div className="text-xl text-gray-500">🏢</div>
                             )}
                           </div>
                           <div>
@@ -286,7 +399,7 @@ export default function JobsPage() {
                                 <FiMapPin className="mr-1" /> {job.location}
                               </span>
                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                <LuIndianRupee className="mr-1" /> {(job.salary / 100000).toLocaleString()} LPA
+                                <LuIndianRupee className="mr-1" /> {(job.salary)} LPA
                               </span>
                               {job.experience && (
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 ml-2">
@@ -312,7 +425,8 @@ export default function JobsPage() {
                           </span>
                           <Link
                             href={`/jobs/${job._id}`}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition w-full md:w-auto text-center"
+                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-center flex items-center justify-center w-full md:w-[120px] md:h-[38px]"
+                            style={{ fontSize: '16px', lineHeight: '28px', padding: 0 }}
                           >
                             View Details
                           </Link>
@@ -322,7 +436,7 @@ export default function JobsPage() {
                   </div>
                 ))}
               </div>
-            ) : (
+             ) : (
               <div className="bg-white rounded-lg shadow p-8 text-center">
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
                   No jobs found
@@ -403,104 +517,15 @@ export default function JobsPage() {
 
       {/* Mobile Filters */}
       {mobileFiltersOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div
-              className="fixed inset-0 transition-opacity"
-              aria-hidden="true"
-            >
-              <div
-                className="absolute inset-0 bg-gray-500 opacity-75"
-                onClick={() => setMobileFiltersOpen(false)}
-              ></div>
-            </div>
-
-            <div className="inline-block align-bottom bg-white rounded-t-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium text-gray-900">Filters</h3>
-                <button
-                  onClick={() => setMobileFiltersOpen(false)}
-                  className="text-gray-400 hover:text-gray-500"
-                >
-                  <FiX className="h-6 w-6" />
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Job Type
-                  </label>
-                  <select
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    value={filters.type}
-                    onChange={(e) => handleFilterChange(e)}
-                    name="type"
-                  >
-                    <option value="">All Types</option>
-                    <option value="Full-time">Full-time</option>
-                    <option value="Part-time">Part-time</option>
-                    <option value="Contract">Contract</option>
-                    <option value="Internship">Internship</option>
-                    <option value="Remote">Remote</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Salary Range
-                  </label>
-                  <select
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    value={filters.salary}
-                    onChange={(e) => handleFilterChange(e)}
-                    name="salary"
-                  >
-                    <option value="">All Ranges</option>
-                    <option value="below-3">Below 3 LPA</option>
-                    <option value="3-6">3-6 LPA</option>
-                    <option value="6-10">6-10 LPA</option>
-                    <option value="10-plus">10+ LPA</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Experience Level
-                  </label>
-                  <select
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    value={filters.experience}
-                    onChange={(e) => handleFilterChange(e)}
-                    name="experience"
-                  >
-                    <option value="">All Levels</option>
-                    <option value="Fresher">Fresher</option>
-                    <option value="1-3 years">1-3 years</option>
-                    <option value="3-5 years">3-5 years</option>
-                    <option value="5+ years">5+ years</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="mt-5 sm:mt-6 grid grid-cols-2 gap-3">
-                <button
-                  onClick={clearFilters}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                >
-                  Clear All
-                </button>
-                <button
-                  onClick={() => setMobileFiltersOpen(false)}
-                  className="w-full px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
-                >
-                  Apply Filters
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <MobileFiltersModal
+          filters={filters}
+          setFilters={setFilters}
+          clearFilters={clearFilters}
+          onClose={() => setMobileFiltersOpen(false)}
+        />
       )}
+
+
     </div>
   );
 }

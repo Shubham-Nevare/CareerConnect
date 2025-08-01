@@ -104,7 +104,7 @@ export default function CompanyOverviewCard({ job }) {
               <h3 className="text-sm font-medium text-gray-500 mb-1">Salary</h3>
               <p className="flex items-center">
                 <LuIndianRupee className="text-gray-500 mr-2" />
-                {job.salary / 100000} LPA
+                {job.salary} LPA
               </p>
             </div>
           )}
