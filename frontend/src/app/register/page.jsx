@@ -224,7 +224,7 @@ export default function RegisterPage() {
           className="w-full max-w-md"
         >
           {/* Mobile Logo */}
-          <div className="lg:hidden text-center mb-8">
+          <div className="lg:hidden text-center mb-8 mt-4">
             <motion.h1 
               initial={{ y: -10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}

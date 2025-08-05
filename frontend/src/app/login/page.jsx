@@ -104,7 +104,7 @@ export default function LoginPage() {
             initial={{ y: -10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="lg:hidden text-center mb-6"
+            className="lg:hidden text-center mb-6 mt-10"
           >
             <Link href="/" className="inline-block">
               <div className="text-3xl font-bold text-blue-600">
