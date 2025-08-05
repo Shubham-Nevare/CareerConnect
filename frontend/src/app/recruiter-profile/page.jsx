@@ -235,7 +235,7 @@ export default function RecruiterProfile() {
         </div>
         <button
           onClick={() => setEditMode(!editMode)}
-          className={`mt-4 md:mt-0 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${
+          className={`mt-4 md:mt-0 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors cursor-pointer ${
             editMode 
               ? "bg-blue-600 text-white hover:bg-blue-700" 
               : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
@@ -318,13 +318,13 @@ export default function RecruiterProfile() {
                   <div className="flex gap-2">
                     <button
                       onClick={saveChanges}
-                      className="flex-1 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+                      className="flex-1 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition cursor-pointer"
                     >
                       Save
                     </button>
                     <button
                       onClick={cancelEditing}
-                      className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-md hover:bg-gray-300 transition"
+                      className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-md hover:bg-gray-300 transition cursor-pointer"
                     >
                       Cancel
                     </button>
@@ -337,7 +337,7 @@ export default function RecruiterProfile() {
                   {editMode && (
                     <button
                       onClick={() => startEditing('personal')}
-                      className="mt-2 text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                      className="mt-2 text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1 cursor-pointer"
                     >
                       <FiEdit2 className="h-3 w-3" /> Edit Profile
                     </button>
@@ -388,7 +388,7 @@ export default function RecruiterProfile() {
                   onClick={() => startEditing('company')}
                   className="text-blue-600 hover:text-blue-800"
                 >
-                  <FiEdit2 className="h-4 w-4" />
+                  <FiEdit2 className="h-4 w-4 cursor-pointer" />
                 </button>
               )}
             </div>
@@ -498,13 +498,13 @@ export default function RecruiterProfile() {
                 <div className="flex gap-2 pt-2">
                   <button
                     onClick={saveChanges}
-                    className="flex-1 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+                    className="flex-1 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition cursor-pointer"
                   >
                     Save
                   </button>
                   <button
                     onClick={cancelEditing}
-                    className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-md hover:bg-gray-300 transition"
+                    className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-md hover:bg-gray-300 transition cursor-pointer"
                   >
                     Cancel
                   </button>

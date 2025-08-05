@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const Company = require('../models/Company');
@@ -7,11 +8,14 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 const cloudinary = require('cloudinary').v2;
+
 cloudinary.config({
-  cloud_name: 'dttbyqrn4',
-  api_key: '645474913834672',
-  api_secret: 'p4F03k3na6tAUJRZ_4oOU62HI6w'
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
 });
+
+// console.log('Cloudinary ENV:', process.env.CLOUD_NAME, process.env.CLOUD_API_KEY, process.env.CLOUD_API_SECRET);
 
 // Create company
 router.post('/', async(req, res) => {

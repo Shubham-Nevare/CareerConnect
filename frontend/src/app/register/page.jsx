@@ -337,7 +337,7 @@ export default function RegisterPage() {
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                       <button
                         type="button"
-                        className="text-gray-400 hover:text-gray-500 focus:outline-none"
+                        className="text-gray-400 hover:text-gray-500 focus:outline-none cursor-pointer"
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (
@@ -366,7 +366,7 @@ export default function RegisterPage() {
                       name="role"
                       value={form.role}
                       onChange={handleChange}
-                      className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-3 py-3 border-gray-300 rounded-md appearance-none"
+                      className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-3 py-3 border-gray-300 rounded-md appearance-none cursor-pointer"
                     >
                       <option value="jobseeker">Job Seeker</option>
                       <option value="recruiter">Recruiter/HR</option>
@@ -442,7 +442,7 @@ export default function RegisterPage() {
                       name="terms"
                       type="checkbox"
                       required
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
                     />
                   </div>
                   <div className="ml-3 text-sm">
@@ -469,7 +469,7 @@ export default function RegisterPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+                    className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer ${
                       loading ? "opacity-75 cursor-not-allowed" : ""
                     }`}
                   >
@@ -502,7 +502,7 @@ export default function RegisterPage() {
                   <div>
                     <button
                       type="button"
-                      className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                      className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer"
                     >
                       <FaGoogle className="h-5 w-5 text-red-600" />
                     </button>
@@ -511,7 +511,7 @@ export default function RegisterPage() {
                   <div>
                     <button
                       type="button"
-                      className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                      className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer"
                     >
                       <FaLinkedin className="h-5 w-5 text-blue-700" />
                     </button>
@@ -520,7 +520,7 @@ export default function RegisterPage() {
                   <div>
                     <button
                       type="button"
-                      className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                      className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer"
                     >
                       <FaGithub className="h-5 w-5 text-gray-800" />
                     </button>

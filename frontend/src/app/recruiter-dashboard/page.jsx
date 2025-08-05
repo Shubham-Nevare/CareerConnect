@@ -666,7 +666,7 @@ export default function RecruiterDashboard() {
                 <button
                   type="button"
                   onClick={handleAddRequirements}
-                  className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                  className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition cursor-pointer"
                   disabled={!requirementsInput.trim()}
                 >
                   +
@@ -699,13 +699,13 @@ export default function RecruiterDashboard() {
                   name="responsibilities"
                   value={responsibilityInput}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 "
                   placeholder="Enter a responsibility point"
                 />
                 <button
                   type="button"
                   onClick={handleAddResponsibility}
-                  className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                  className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition cursor-pointer"
                   disabled={!responsibilityInput.trim()}
                 >
                   +
@@ -796,7 +796,7 @@ export default function RecruiterDashboard() {
                           onChange={(e) =>
                             handleJobStatusChange(job._id, e.target.value)
                           }
-                          className={`px-3 py-1 rounded-full text-sm font-medium border-transparent focus:ring-1  ${
+                          className={`px-3 py-1 rounded-full text-sm font-medium border-transparent focus:ring-1 cursor-pointer  ${
                             jobStatusColors[job.status]?.bg || "bg-gray-100"
                           } ${
                             jobStatusColors[job.status]?.text || "text-gray-800"

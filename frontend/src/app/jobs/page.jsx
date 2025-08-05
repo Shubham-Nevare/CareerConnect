@@ -261,7 +261,7 @@ export default function JobsPage() {
               >
                 <FiFilter /> Filters
               </button>
-              <button className="hidden md:block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+              <button className="hidden md:block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition cursor-pointer">
                 Search Jobs
               </button>
             </div>
@@ -279,7 +279,7 @@ export default function JobsPage() {
                 <h2 className="text-lg font-semibold">Filters</h2>
                 <button
                   onClick={clearFilters}
-                  className="text-sm text-blue-600 hover:text-blue-800"
+                  className="text-sm text-blue-600 hover:text-blue-800 cursor-pointer"
                 >
                   Clear All
                 </button>

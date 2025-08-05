@@ -127,7 +127,7 @@ export default function Navbar() {
               >
                 {user.profilePhoto ? (
                   <motion.img
-                    src={`${process.env.NEXT_PUBLIC_API_URL}${user.profilePhoto}`}
+                    src={`${user.profilePhoto}`}
                     alt={user.name || "User"}
                     className="w-8 h-8 rounded-full object-cover"
                     whileHover={{ scale: 1.05 }}
@@ -186,7 +186,7 @@ export default function Navbar() {
                         setMenuOpen(false);
                         handleLogout();
                       }}
-                      className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
+                      className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 "
                     >
                       Sign Out
                     </button>

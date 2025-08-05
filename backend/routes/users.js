@@ -1,10 +1,17 @@
+require('dotenv').config();
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const multer = require("multer");
 const path = require("path");
-const upload = multer({
-    dest: path.join(__dirname, "../uploads/profile_photos/"),
+const cloudinary = require('cloudinary').v2;
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
 });
 // Update Multer storage for resumes to save as firstname_lastname_resume.pdf
 const resumeStorage = multer.diskStorage({
@@ -27,17 +34,7 @@ const resumeStorage = multer.diskStorage({
 });
 const resumeUpload = multer({ storage: resumeStorage });
 
-// Update Multer storage for profile photos to save with original extension
-const profilePhotoStorage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, path.join(__dirname, "../uploads/profile_photos/"));
-    },
-    filename: function(req, file, cb) {
-        const ext = path.extname(file.originalname);
-        cb(null, Date.now() + ext);
-    },
-});
-const profilePhotoUpload = multer({ storage: profilePhotoStorage });
+
 
 // Create user
 router.post("/", async(req, res) => {
@@ -93,16 +90,28 @@ router.patch("/:id", async(req, res) => {
     }
 });
 
-// Profile photo upload endpoint
+// Profile photo upload endpoint (Cloudinary)
 router.post(
     "/:id/profile-photo",
-    profilePhotoUpload.single("profilePhoto"),
-    async(req, res) => {
+    upload.single("profilePhoto"),
+    async (req, res) => {
         try {
-            const user = await User.findByIdAndUpdate(
-                req.params.id, { profilePhoto: `/uploads/profile_photos/${req.file.filename}` }, { new: true }
+            if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+
+            const stream = cloudinary.uploader.upload_stream(
+                { folder: 'profile_photos' },
+                async (error, result) => {
+                    if (error) return res.status(500).json({ error: error.message });
+
+                    const user = await User.findByIdAndUpdate(
+                        req.params.id,
+                        { profilePhoto: result.secure_url },
+                        { new: true }
+                    );
+                    res.json(user);
+                }
             );
-            res.json(user);
+            stream.end(req.file.buffer);
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
