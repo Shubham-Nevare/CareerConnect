@@ -1,9 +1,10 @@
 "use client";
-import { FiStar, FiMapPin, FiLink, FiUsers, FiDollarSign } from "react-icons/fi";
+import { FiStar, FiMapPin, FiLink, FiUsers, FiDollarSign, FiBriefcase } from "react-icons/fi";
 import Link from "next/link";
 
 
 import { useEffect, useState } from "react";
+import { FaBriefcase, FaRupeeSign } from "react-icons/fa";
 
 export default function CompaniesPage() {
   const [companies, setCompanies] = useState([]);
@@ -150,7 +151,7 @@ export default function CompaniesPage() {
                               {company.industry || 'N/A'}
                             </div>
                             <div className="flex items-center">
-                              <FiDollarSign className="mr-1" />
+                              <FiBriefcase className="mr-1" />
                               {(company.jobs?.length || company.jobs || 0)} open jobs
                             </div>
                           </div>

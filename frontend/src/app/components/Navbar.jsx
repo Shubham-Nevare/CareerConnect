@@ -123,7 +123,7 @@ export default function Navbar() {
             <motion.div custom={3} variants={navItem} className="relative">
               <button
                 onClick={() => setMenuOpen((open) => !open)}
-                className="flex items-center gap-2 px-3 py-1 rounded focus:outline-none"
+                className="flex items-center gap-2 px-3 py-1 rounded focus:outline-none cursor-pointer"
               >
                 {user.profilePhoto ? (
                   <motion.img

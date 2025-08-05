@@ -54,7 +54,7 @@ const CompanyProfilePage = () => {
       <button
         type="button"
         onClick={() => router.back()}
-        className="inline-flex items-center mb-6 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded transition-colors"
+        className="inline-flex items-center mb-6 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded transition-colors cursor-pointer"
       >
         <span className="mr-2">←</span> Back
       </button>
@@ -76,10 +76,13 @@ const CompanyProfilePage = () => {
           <div className="text-gray-500 mt-1">{company.industry}</div>
           <div className="text-sm text-gray-400 mt-1">Joined: {new Date(company.createdAt).toLocaleDateString()}</div>
         </div>
-      </div>
-      <div className="mb-4">
+        <div className="justify-end ml-auto align-start">
         <span className={`px-2 py-1 text-xs rounded-full font-semibold ${company.status === "active" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}>{company.status}</span>
       </div>
+      </div>
+      {/* <div className="mb-4">
+        <span className={`px-2 py-1 text-xs rounded-full font-semibold ${company.status === "active" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}>{company.status}</span>
+      </div> */}
       <div className="mb-6">
         <h2 className="text-lg font-semibold text-gray-700 mb-2">About</h2>
         <p className="text-gray-700 whitespace-pre-line">{company.description || "No description provided."}</p>
