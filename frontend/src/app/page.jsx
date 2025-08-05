@@ -325,7 +325,7 @@ export default function HomePage() {
                       <div className="w-16 h-16 flex-shrink-0 bg-white rounded-lg border border-gray-200 flex items-center justify-center overflow-hidden">
                         {job.company?.logo ? (
                           <img
-                            src={`${process.env.NEXT_PUBLIC_API_URL}${job.company.logo}`}
+                            src={`${job.company.logo}`}
                             alt={job.company?.name || "Company Logo"}
                             className="w-full h-full object-contain"
                           />

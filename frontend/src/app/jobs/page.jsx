@@ -19,7 +19,11 @@ function MobileFiltersModal({ filters, setFilters, clearFilters, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto" role="dialog" aria-modal="true">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+    >
       {/* Overlay */}
       <div
         className="fixed inset-0 bg-opacity-30 backdrop-blur-sm transition-opacity"
@@ -94,7 +98,10 @@ function MobileFiltersModal({ filters, setFilters, clearFilters, onClose }) {
         </div>
         <div className="mt-5 sm:mt-6 grid grid-cols-2 gap-3">
           <button
-            onClick={() => { clearFilters(); onClose(); }}
+            onClick={() => {
+              clearFilters();
+              onClose();
+            }}
             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
           >
             Clear All
@@ -122,7 +129,6 @@ import {
   FiX,
 } from "react-icons/fi";
 import { LuIndianRupee } from "react-icons/lu";
-
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState([]);
@@ -166,7 +172,7 @@ export default function JobsPage() {
         const params = new URLSearchParams({
           page,
           limit: 10,
-          status: 'active', // Always filter for active jobs
+          status: "active", // Always filter for active jobs
           ...(filters.search && { search: filters.search }),
           ...(filters.location && { location: filters.location }),
           ...(filters.type && { type: filters.type }),
@@ -378,10 +384,14 @@ export default function JobsPage() {
                           <div className="w-14 h-14 min-w-[56px] min-h-[56px] max-w-[56px] max-h-[56px] bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
                             {job.company?.logo ? (
                               <img
-                                src={`${process.env.NEXT_PUBLIC_API_URL}${job.company.logo}`}
+                                src={job.company.logo}
                                 alt={job.company?.name || "Company Logo"}
                                 className="object-contain w-12 h-12 min-w-[54px] min-h-[54px] max-w-[54px] max-h-[54px] rounded-lg"
-                                style={{ width: '54px', height: '54px' }}
+                                style={{ width: "54px", height: "54px" }}
+                                onError={(e) => {
+                                  e.target.onerror = null;
+                                  e.target.src = "/default-company.jpg";
+                                }}
                               />
                             ) : (
                               <div className="text-xl text-gray-500">🏢</div>
@@ -394,13 +404,14 @@ export default function JobsPage() {
                             <p className="text-gray-600 mt-1">
                               {job.company?.name || "Company Confidential"}
                             </p>
-                           
+
                             <div className="flex flex-wrap gap-2 mt-3">
                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                 <FiMapPin className="mr-1" /> {job.location}
                               </span>
                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                <LuIndianRupee className="mr-1" /> {(job.salary)} LPA
+                                <LuIndianRupee className="mr-1" /> {job.salary}{" "}
+                                LPA
                               </span>
                               {job.experience && (
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 ml-2">
@@ -413,22 +424,24 @@ export default function JobsPage() {
                                 </span>
                               )}
                             </div>
-                             {/* {Array.isArray(job.requirements) && job.requirements.length > 0 && (
+                            {/* {Array.isArray(job.requirements) && job.requirements.length > 0 && (
                               <div className="text-gray-700 text-sm mt-2">
                                 <span className="font-medium">Requirements:</span> {job.requirements.join(', ')}
                               </div>
                             )} */}
                             {job.description && (
                               <div className="text-gray-700 text-sm mt-2">
-                                <span className="font-medium">Description:</span>{" "}
+                                <span className="font-medium">
+                                  Description:
+                                </span>{" "}
                                 <span>
-                                  {
-                                    job.description
-                                      .split(" ")
-                                      .slice(0, 23)
-                                      .join(" ")
-                                  }
-                                  {job.description.split(" ").length > 23 ? "..." : ""}
+                                  {job.description
+                                    .split(" ")
+                                    .slice(0, 23)
+                                    .join(" ")}
+                                  {job.description.split(" ").length > 23
+                                    ? "..."
+                                    : ""}
                                 </span>
                               </div>
                             )}
@@ -441,7 +454,11 @@ export default function JobsPage() {
                           <Link
                             href={`/jobs/${job._id}`}
                             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-center flex items-center justify-center w-full md:w-[120px] md:h-[38px]"
-                            style={{ fontSize: '16px', lineHeight: '28px', padding: 0 }}
+                            style={{
+                              fontSize: "16px",
+                              lineHeight: "28px",
+                              padding: 0,
+                            }}
                           >
                             View Details
                           </Link>
@@ -451,7 +468,7 @@ export default function JobsPage() {
                   </div>
                 ))}
               </div>
-             ) : (
+            ) : (
               <div className="bg-white rounded-lg shadow p-8 text-center">
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
                   No jobs found
@@ -539,8 +556,6 @@ export default function JobsPage() {
           onClose={() => setMobileFiltersOpen(false)}
         />
       )}
-
-
     </div>
   );
 }

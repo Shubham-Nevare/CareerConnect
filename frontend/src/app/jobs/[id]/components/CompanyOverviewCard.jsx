@@ -7,9 +7,7 @@ export default function CompanyOverviewCard({ job }) {
 
   if (!company) return null;
 
-  const logoUrl = company.logo
-    ? `${process.env.NEXT_PUBLIC_API_URL}${company.logo}`
-    : null;
+  const logoUrl = company.logo || null;
 
 
   return (
@@ -27,11 +25,14 @@ export default function CompanyOverviewCard({ job }) {
                 src={logoUrl}
                 alt={`${company.name} logo`}
                 className="w-full h-full object-contain"
+                onError={e => { e.target.onerror = null; e.target.src = '/default-company.jpg'; }}
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-400">
-                <FiBriefcase className="w-6 h-6" />
-              </div>
+              <img
+                src="/default-company.jpg"
+                alt="Default Company Logo"
+                className="w-full h-full object-contain"
+              />
             )}
           </div>
           <div>
