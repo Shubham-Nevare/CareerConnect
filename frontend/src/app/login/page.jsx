@@ -239,7 +239,7 @@ export default function LoginPage() {
                     <motion.button
                       whileTap={{ scale: 0.9 }}
                       type="button"
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-500 focus:outline-none"
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-500 focus:outline-none cursor-pointer"
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? (
@@ -292,13 +292,13 @@ export default function LoginPage() {
                     whileTap={{ scale: 0.98 }}
                     type="submit"
                     disabled={loading}
-                    className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200 ${
+                    className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200 cursor-pointer ${
                       loading ? "opacity-75 cursor-not-allowed" : ""
                     }`}
                   >
                     {loading ? (
                       <>
-                        <FiLoader className="animate-spin mr-2 h-4 w-4" />
+                        <FiLoader className="animate-spin mr-2 h-4 w-4 " />
                         Signing in...
                       </>
                     ) : (
@@ -326,7 +326,7 @@ export default function LoginPage() {
                   </div>
                 </div>
 
-                <div className="mt-6 grid grid-cols-3 gap-3">
+                <div className="mt-6 grid grid-cols-3 gap-3 ">
                   {[
                     { icon: <FaGoogle className="h-5 w-5 text-red-600" /> },
                     { icon: <FaLinkedin className="h-5 w-5 text-blue-700" /> },
@@ -342,7 +342,7 @@ export default function LoginPage() {
                         whileHover={{ y: -2 }}
                         whileTap={{ scale: 0.95 }}
                         type="button"
-                        className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition duration-200"
+                        className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition duration-200 cursor-pointer"
                       >
                         {social.icon}
                       </motion.button>

@@ -334,7 +334,7 @@ export default function JobSeekerProfile() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-14">
       {/* Profile Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+      <div className="flex flex-row justify-between items-center md:items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
         <div className="flex space-x-3 mt-4 md:mt-0">
           <button
@@ -414,7 +414,7 @@ export default function JobSeekerProfile() {
                         src={
                           formData.profilePhoto ||
                           userData?.profilePhoto
-                            ? `${process.env.NEXT_PUBLIC_API_URL}${userData.profilePhoto}`
+                            ? `${userData.profilePhoto}`
                             : "/default-profile.jpg" ||
                           "/default-profile.jpg"
                         }
@@ -553,7 +553,7 @@ export default function JobSeekerProfile() {
                     <img
                       src={
                         userData?.profilePhoto
-                          ? `${process.env.NEXT_PUBLIC_API_URL}${userData.profilePhoto}`
+                          ? `${userData.profilePhoto}`
                           : "/default-profile.jpg"
                       }
                       alt="Profile"
@@ -887,7 +887,7 @@ export default function JobSeekerProfile() {
                   )}
                 </div>
               ) : userData?.profile?.resume?.url ? (
-                <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                <div className="flex flex-col md:flex-row items-center justify-between p-4 border border-gray-200 rounded-lg">
                   <div className="flex items-center">
                     <FiFile className="text-gray-400 mr-3" />
                     <div>
@@ -895,7 +895,7 @@ export default function JobSeekerProfile() {
                         {userData.profile.resume.url.split("/").pop()}
                       </p>
                       {userData.profile.resume.lastUpdated && (
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-gray-500 mb-2">
                           Last updated:{" "}
                           {new Date(
                             userData.profile.resume.lastUpdated
