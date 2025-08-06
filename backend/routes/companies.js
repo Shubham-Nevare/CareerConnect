@@ -91,27 +91,35 @@ router.delete('/:id', async(req, res) => {
 
 
 // Company logo upload endpoint (Cloudinary)
+
 router.post('/:id/logo', upload.single('logo'), async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
-        // Upload to Cloudinary
-        const stream = cloudinary.uploader.upload_stream(
-            { folder: 'company_logos' },
-            async (error, result) => {
-                if (error) return res.status(500).json({ error: error.message });
-
-                // Save Cloudinary URL in DB
-                const company = await Company.findByIdAndUpdate(
-                    req.params.id,
-                    { logo: result.secure_url },
-                    { new: true }
+        // Upload to Cloudinary and wait for result
+        const uploadToCloudinary = () => {
+            return new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { folder: 'company_logos' },
+                    (error, result) => {
+                        if (error) return reject(error);
+                        resolve(result);
+                    }
                 );
-                if (!company) return res.status(404).json({ error: 'Company not found' });
-                res.json(company);
-            }
+                stream.end(req.file.buffer);
+            });
+        };
+
+        const result = await uploadToCloudinary();
+
+        // Save Cloudinary URL in DB
+        const company = await Company.findByIdAndUpdate(
+            req.params.id,
+            { logo: result.secure_url },
+            { new: true }
         );
-        stream.end(req.file.buffer);
+        if (!company) return res.status(404).json({ error: 'Company not found' });
+        res.json(company);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

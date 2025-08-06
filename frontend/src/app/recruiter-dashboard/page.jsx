@@ -509,7 +509,7 @@ export default function RecruiterDashboard() {
       <div className="flex border-b mb-6">
         <button
           onClick={() => setActiveView("postedJobs")}
-          className={`px-4 py-2 text-sm font-medium ${
+          className={`px-4 py-2 text-sm font-medium cursor-pointer ${
             activeView === "postedJobs"
               ? "border-b-1 border-blue-600 text-blue-600"
               : "text-gray-500 hover:text-gray-700"
@@ -519,7 +519,7 @@ export default function RecruiterDashboard() {
         </button>
         <button
           onClick={() => setActiveView("allApplicants")}
-          className={`px-4 py-2 text-sm font-medium ${
+          className={`px-4 py-2 text-sm font-medium cursor-pointer ${
             activeView === "allApplicants"
               ? "border-b-1 border-blue-600 text-blue-600"
               : "text-gray-500 hover:text-gray-700"
@@ -870,7 +870,7 @@ export default function RecruiterDashboard() {
                           <div className="flex items-start space-x-4 flex-1">
                           {/* {console.log(applicant)} */}
                             {applicant?.userId && applicant.userId.profilePhoto ? (
-                              <img src={`${process.env.NEXT_PUBLIC_API_URL}${applicant.userId.profilePhoto}`} alt={applicant?.name} className="w-10 h-10 rounded-full object-cover" />
+                              <img src={`${applicant.userId.profilePhoto}`} alt={applicant?.name} className="w-10 h-10 rounded-full object-cover" />
                             ) : (
                               <div className="bg-gray-200 rounded-full w-10 h-10 flex items-center justify-center text-gray-600">
                                 <FiUser className="text-lg" />

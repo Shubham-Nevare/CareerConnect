@@ -42,6 +42,7 @@ export default function JobSeekerProfile() {
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [resume, setResume] = useState(null);
+  const [uploadingResume, setUploadingResume] = useState(false);
   const [activeEditSection, setActiveEditSection] = useState(null);
   const [formData, setFormData] = useState({});
   const { user, token, login } = useAuth();
@@ -75,6 +76,7 @@ export default function JobSeekerProfile() {
   };
 
   const handleSubmitResume = async () => {
+    setUploadingResume(true);
     try {
       const formData = new FormData();
       formData.append("name", userData.name); // Append name first
@@ -98,6 +100,8 @@ export default function JobSeekerProfile() {
       setActiveEditSection(null);
     } catch (error) {
       console.error("Resume upload failed", error);
+    } finally {
+      setUploadingResume(false);
     }
   };
 
@@ -868,19 +872,30 @@ export default function JobSeekerProfile() {
                             </p>
                           </div>
                         </div>
-                        <div className="flex space-x-2">
+                        <div className="flex space-x-2 items-center">
                           <button
                             onClick={cancelEditing}
                             className="text-gray-500 hover:text-gray-700"
+                            disabled={uploadingResume}
                           >
                             <FiX />
                           </button>
                           <button
                             onClick={handleSubmitResume}
                             className="text-blue-600 hover:text-blue-800"
+                            disabled={uploadingResume}
                           >
                             Save
                           </button>
+                          {uploadingResume && (
+                            <span className="ml-2 flex items-center text-blue-600">
+                              <svg className="animate-spin h-5 w-5 mr-1 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                              </svg>
+                              Uploading...
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -905,8 +920,32 @@ export default function JobSeekerProfile() {
                     </div>
                   </div>
                   <a
-                    href={userData.profile.resume.url + `?username=${encodeURIComponent(userData.name)}`}
-                    download={`${userData.name}_resume.pdf`}
+                    href="#"
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      const response = await fetch(userData.profile.resume.url);
+                      const blob = await response.blob();
+                      // Get original filename from Cloudinary URL or userData
+                      let originalName = 'resume.pdf';
+                      if (userData.profile.resume.url) {
+                        const urlPart = userData.profile.resume.url.split('/').pop();
+                        // Remove extension if present
+                        originalName = urlPart ? urlPart.replace(/\.[^/.]+$/, '') + '.pdf' : 'resume.pdf';
+                      }
+                      const fileName = originalName;
+                      const url = window.URL.createObjectURL(blob);
+                      // Use a single anchor and remove after click
+                      const a = document.createElement('a');
+                      a.style.display = 'none';
+                      a.href = url;
+                      a.setAttribute('download', fileName);
+                      document.body.appendChild(a);
+                      a.click();
+                      setTimeout(() => {
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                      }, 100);
+                    }}
                     className="text-blue-600 hover:text-blue-800 flex items-center"
                   >
                     <FiDownload className="mr-1" /> Download

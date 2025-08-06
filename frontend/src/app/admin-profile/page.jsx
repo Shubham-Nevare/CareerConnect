@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '../components/AuthProvider';
 import { 
   FiUser, FiMail, FiLock, FiCamera, FiSave, FiEdit, 
@@ -13,6 +14,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const AdminProfile = () => {
   const { user, token, logout } = useAuth();
+  const router = useRouter();
   const [profile, setProfile] = useState({
     name: '',
     email: '',
@@ -330,7 +332,7 @@ const AdminProfile = () => {
             <div className="space-y-1">
               <button
                 onClick={() => setActiveTab('profile')}
-                className={`w-full text-left px-4 py-3 rounded-lg flex items-center transition-colors ${
+                className={`w-full text-left px-4 py-3 rounded-lg flex items-center transition-colors cursor-pointer ${
                   activeTab === 'profile' 
                     ? 'bg-blue-50 text-blue-600 font-medium' 
                     : 'text-gray-700 hover:bg-gray-50'
@@ -342,7 +344,7 @@ const AdminProfile = () => {
               </button>
               <button
                 onClick={() => setActiveTab('security')}
-                className={`w-full text-left px-4 py-3 rounded-lg flex items-center transition-colors ${
+                className={`w-full text-left px-4 py-3 rounded-lg flex items-center transition-colors cursor-pointer ${
                   activeTab === 'security' 
                     ? 'bg-blue-50 text-blue-600 font-medium' 
                     : 'text-gray-700 hover:bg-gray-50'
@@ -354,7 +356,7 @@ const AdminProfile = () => {
               </button>
               <button
                 onClick={() => setActiveTab('activity')}
-                className={`w-full text-left px-4 py-3 rounded-lg flex items-center transition-colors ${
+                className={`w-full text-left px-4 py-3 rounded-lg flex items-center transition-colors cursor-pointer ${
                   activeTab === 'activity' 
                     ? 'bg-blue-50 text-blue-600 font-medium' 
                     : 'text-gray-700 hover:bg-gray-50'
@@ -367,8 +369,11 @@ const AdminProfile = () => {
             </div>
             
             <button
-              onClick={logout}
-              className="w-full mt-6 px-4 py-2 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center"
+              onClick={() => {
+                logout();
+                router.push('/login');
+              }}
+              className="w-full mt-6 px-4 py-2 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center cursor-pointer"
             >
               <FiLogOut className="mr-2" /> Sign Out
             </button>
@@ -456,13 +461,13 @@ const AdminProfile = () => {
                             <button
                               type="button"
                               onClick={() => setEditMode(false)}
-                              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
                             >
                               Cancel
                             </button>
                             <button
                               type="submit"
-                              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center shadow-md hover:shadow-lg"
+                              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center shadow-md hover:shadow-lg cursor-pointer"
                               disabled={loading}
                             >
                               <FiSave className="mr-2" /> {loading ? 'Saving...' : 'Save Changes'}
@@ -472,7 +477,7 @@ const AdminProfile = () => {
                           <button
                             type="button"
                             onClick={() => setEditMode(true)}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center shadow-md hover:shadow-lg"
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center shadow-md hover:shadow-lg cursor-pointer"
                           >
                             <FiEdit className="mr-2" /> Edit Profile
                           </button>
@@ -535,7 +540,7 @@ const AdminProfile = () => {
                         <div className="mt-6 flex justify-end">
                           <button
                             type="submit"
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center shadow-md hover:shadow-lg"
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center shadow-md hover:shadow-lg cursor-pointer"
                             disabled={loading}
                           >
                             {loading ? 'Updating...' : (

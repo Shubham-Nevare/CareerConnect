@@ -336,7 +336,7 @@ export default function ContactSupport() {
                 disabled={isSubmitting}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-3 px-6 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white font-medium shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
+                className="w-full py-3 px-6 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white font-medium shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
               >
                 {isSubmitting ? (
                   <span className="flex items-center justify-center">
@@ -363,7 +363,7 @@ export default function ContactSupport() {
                     Sending...
                   </span>
                 ) : (
-                  <span className="flex items-center justify-center">
+                  <span className="flex items-center justify-center ">
                     <FiSend className="mr-2" />
                     Send Message
                   </span>

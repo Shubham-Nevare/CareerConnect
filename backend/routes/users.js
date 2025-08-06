@@ -119,13 +119,45 @@ router.post(
 );
 
 // Resume upload endpoint
-router.post("/:id/resume", resumeUpload.single("resume"), async(req, res) => {
+
+// Resume upload endpoint (Cloudinary)
+
+router.post("/:id/resume", upload.single("resume"), async (req, res) => {
     try {
+        if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+
+        // Sanitize original filename for public_id
+        const originalName = req.file.originalname.replace(/\.[^/.]+$/, ""); // Remove extension
+        const safeName = originalName.replace(/[^a-zA-Z0-9_-]/g, "");
+
+        // Upload to Cloudinary and wait for result
+        const uploadToCloudinary = () => {
+            return new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    {
+                        folder: 'resumes',
+                        resource_type: 'raw',
+                        public_id: safeName
+                    },
+                    (error, result) => {
+                        if (error) return reject(error);
+                        resolve(result);
+                    }
+                );
+                stream.end(req.file.buffer);
+            });
+        };
+
+        const result = await uploadToCloudinary();
+
+        // Save Cloudinary URL in DB
         const user = await User.findByIdAndUpdate(
-            req.params.id, {
-                "profile.resume.url": `/uploads/resumes/${req.file.filename}`,
+            req.params.id,
+            {
+                "profile.resume.url": result.secure_url,
                 "profile.resume.lastUpdated": new Date().toISOString(),
-            }, { new: true }
+            },
+            { new: true }
         );
         res.json(user);
     } catch (err) {

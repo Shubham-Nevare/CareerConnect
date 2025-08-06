@@ -1,22 +1,22 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { 
-  FiMail, 
-  FiPhone, 
-  FiMapPin, 
-  FiGlobe, 
+import {
+  FiMail,
+  FiPhone,
+  FiMapPin,
+  FiGlobe,
   FiFile,
   FiDownload,
   FiBriefcase,
   FiCalendar,
-  FiArrowLeft
+  FiArrowLeft,
 } from "react-icons/fi";
-import { 
-  FaLinkedin, 
-  FaGithub, 
+import {
+  FaLinkedin,
+  FaGithub,
   FaRegBuilding,
-  FaGraduationCap
+  FaGraduationCap,
 } from "react-icons/fa";
 import { useAuth } from "../../components/AuthProvider";
 
@@ -34,7 +34,9 @@ export default function JobSeekerProfilePage() {
       setLoading(true);
       setNotFound(false);
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${id}`);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/users/${id}`
+        );
         if (res.ok) {
           const data = await res.json();
           if (!data || Object.keys(data).length === 0) {
@@ -59,22 +61,24 @@ export default function JobSeekerProfilePage() {
   }, [id]);
 
   if (loading) return <div className="p-8">Loading...</div>;
-if (notFound || !user) {
-  return (
-    <div className="flex flex-col justify-center items-center h-screen w-screen bg-gray-50">
-      <div className="text-3xl font-bold text-gray-400 mb-2">Not Found</div>
-      <div className="text-gray-500 text-lg">This user does not exist or has deleted their profile.</div>
-    </div>
-  );
-}
+  if (notFound || !user) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen w-screen bg-gray-50">
+        <div className="text-3xl font-bold text-gray-400 mb-2">Not Found</div>
+        <div className="text-gray-500 text-lg">
+          This user does not exist or has deleted their profile.
+        </div>
+      </div>
+    );
+  }
 
   // Helper to get full resume URL
   const getResumeUrl = (cacheBust = false) => {
-    if (!user?.profile?.resume?.url) return '';
-    const baseUrl = user.profile.resume.url.startsWith('http')
+    if (!user?.profile?.resume?.url) return "";
+    const baseUrl = user.profile.resume.url.startsWith("http")
       ? user.profile.resume.url
       : `${process.env.NEXT_PUBLIC_API_URL}${user.profile.resume.url}`;
-    
+
     if (cacheBust) {
       return `${baseUrl}?t=${new Date().getTime()}`;
     }
@@ -93,10 +97,7 @@ if (notFound || !user) {
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       // Generate filename: e.g., John_Doe_resume.pdf
-      const name =
-        user.profile?.basicInfo?.name ||
-        user.name ||
-        "resume";
+      const name = user.profile?.basicInfo?.name || user.name || "resume";
       const safeName = name.trim().replace(/\s+/g, "_");
       const filename = `${safeName}_resume.pdf`;
       const a = document.createElement("a");
@@ -118,7 +119,6 @@ if (notFound || !user) {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-15">
-     
       {/* Profile Header */}
       <div className="flex items-center gap-4 mb-8">
         <button
@@ -131,7 +131,7 @@ if (notFound || !user) {
       </div>
 
       {/* Profile Completion Meter */}
-     
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column */}
         <div className="lg:col-span-1 space-y-6">
@@ -146,7 +146,7 @@ if (notFound || !user) {
                 <img
                   src={
                     user?.profilePhoto
-                      ? `${process.env.NEXT_PUBLIC_API_URL}${user.profilePhoto}`
+                      ? `${user.profilePhoto}`
                       : "/default-profile.jpg"
                   }
                   alt="Profile"
@@ -257,11 +257,16 @@ if (notFound || !user) {
           {/* Skills Card */}
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Skills</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Skills
+              </h3>
               <div className="space-y-3">
                 {user?.profile?.skills?.length > 0 ? (
                   user.profile.skills.map((skill, idx) => (
-                    <div key={idx} className="flex justify-between items-center mb-2">
+                    <div
+                      key={idx}
+                      className="flex justify-between items-center mb-2"
+                    >
                       <div>
                         <span className="text-sm font-medium text-gray-900">
                           {skill.name}
@@ -285,7 +290,9 @@ if (notFound || !user) {
           {/* About Section */}
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">About</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                About
+              </h3>
               <p className="text-gray-700">
                 {user?.profile?.basicInfo?.summary ||
                   "No professional summary provided."}
@@ -304,13 +311,13 @@ if (notFound || !user) {
                       <div className="flex gap-4 items-center">
                         <button
                           onClick={() => setShowPdf(true)}
-                          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition cursor-pointer"
                         >
                           View Resume
                         </button>
                         <button
                           onClick={handleDownloadResume}
-                          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+                          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition cursor-pointer"
                         >
                           Download Resume
                         </button>
@@ -319,19 +326,27 @@ if (notFound || !user) {
                       <div>
                         <button
                           onClick={() => setShowPdf(false)}
-                          className="mb-4 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition"
+                          className="mb-4 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition cursor-pointer"
                         >
                           Back to Profile
                         </button>
-                        <div className="w-full" style={{ aspectRatio: '16/9', height: '70vh', maxHeight: '75vh', overflow: 'hidden' }}>
-                          <iframe
-                            src={getResumeUrl(true)} // Pass true to bust cache for viewing
-                            title="Resume PDF"
-                            width="100%"
-                            height="100%"
-                            style={{ border: 0, width: '100%', height: '100%', display: 'block' }}
-                            allowFullScreen
-                          />
+                        <div className="w-full h-[70vh] border border-gray-200 rounded-lg overflow-hidden">
+                          {user.profile.resume.url.endsWith(".pdf") ? (
+                            <iframe
+                              src={`${user.profile.resume.url}#toolbar=0&navpanes=0`}
+                              title="Resume PDF"
+                              width="100%"
+                              height="100%"
+                              style={{ border: "none" }}
+                            />
+                          ) : (
+                            <div className="flex items-center justify-center h-full">
+                              <p className="text-gray-500">
+                                Resume format not supported for preview. Please
+                                download to view.
+                              </p>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
@@ -373,9 +388,7 @@ if (notFound || !user) {
                         </div>
                       </div>
                       {exp.description && (
-                        <p className="mt-2 text-gray-700">
-                          {exp.description}
-                        </p>
+                        <p className="mt-2 text-gray-700">{exp.description}</p>
                       )}
                     </div>
                   ))
@@ -414,9 +427,7 @@ if (notFound || !user) {
                             {edu.institution} - {edu.endDate}
                           </p>
                           {edu.field && (
-                            <p className="text-sm text-gray-500">
-                              {edu.field}
-                            </p>
+                            <p className="text-sm text-gray-500">{edu.field}</p>
                           )}
                         </div>
                       </div>
@@ -443,7 +454,10 @@ if (notFound || !user) {
               <div className="space-y-3">
                 {user?.profile?.certifications?.length > 0 ? (
                   user.profile.certifications.map((cert, idx) => (
-                    <div key={idx} className="flex justify-between items-center mb-2">
+                    <div
+                      key={idx}
+                      className="flex justify-between items-center mb-2"
+                    >
                       <div>
                         <span className="text-sm font-medium text-gray-900">
                           {cert.name}

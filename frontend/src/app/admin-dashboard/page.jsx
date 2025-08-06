@@ -395,11 +395,11 @@ const AdminDashboard = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap gap-2 mb-6 border-b border-gray-200">
+      <div className="flex flex-wrap gap-2 mb-6 border-b border-gray-200 ">
         {tabs.map((tab) => (
           <button
             key={tab.name}
-            className={`flex items-center px-4 py-2 rounded-t-lg font-medium transition-colors ${
+            className={`flex items-center px-4 py-2 rounded-t-lg font-medium transition-colors cursor-pointer ${
               activeTab === tab.name
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -450,7 +450,7 @@ const AdminDashboard = () => {
                         <div className="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
                           {user.profilePhoto ? (
                             <img
-                              src={`${process.env.NEXT_PUBLIC_API_URL}${user.profilePhoto}`}
+                              src={`${user.profilePhoto}`}
                               alt={user.name}
                               className="h-full w-full rounded-full object-cover"
                               onError={(e) => {
@@ -664,7 +664,7 @@ const AdminDashboard = () => {
                         <div className="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
                           {company.logo ? (
                             <img
-                              src={`${process.env.NEXT_PUBLIC_API_URL}${company.logo}`}
+                              src={`${company.logo}`}
                               alt={company.name}
                               className="h-full w-full rounded-lg object-cover"
                               onError={(e) => {
