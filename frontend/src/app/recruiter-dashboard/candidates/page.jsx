@@ -42,6 +42,8 @@ export default function AdvancedCandidateSearch() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCandidates, setSelectedCandidates] = useState([]);
   const [viewMode, setViewMode] = useState("table"); // 'table' or 'grid'
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [showSkillsPopup, setShowSkillsPopup] = useState(false);
 
   // On mount, sync viewMode from localStorage (client only)
   useEffect(() => {
@@ -226,6 +228,7 @@ export default function AdvancedCandidateSearch() {
   };
 
   const handleSelectCandidate = (id) => {
+    if (!id) return; // Don't proceed if no ID
     setSelectedCandidates((prev) =>
       prev.includes(id)
         ? prev.filter((candidateId) => candidateId !== id)
@@ -237,7 +240,11 @@ export default function AdvancedCandidateSearch() {
     if (selectedCandidates.length === filteredCandidates.length) {
       setSelectedCandidates([]);
     } else {
-      setSelectedCandidates(filteredCandidates.map((c) => c.id));
+      setSelectedCandidates(
+        filteredCandidates
+          .map((c) => c._id || c.id)
+          .filter((id) => id !== undefined) // Ensure we only include valid IDs
+      );
     }
   };
 
@@ -249,7 +256,7 @@ export default function AdvancedCandidateSearch() {
           let emails = [];
           if (selectedCandidates.length > 0) {
             emails = filteredCandidates
-              .filter((c) => selectedCandidates.includes(c.id))
+              .filter((c) => selectedCandidates.includes(c._id || c.id))
               .map((c) => c.email)
               .filter((email) => {
                 if (!email) {
@@ -322,58 +329,172 @@ export default function AdvancedCandidateSearch() {
         }
         break;
       }
+      // case "download": {
+      //   const selected = filteredCandidates.filter((c) =>
+      //     selectedCandidates.includes(c._id || c.id)
+      //   );
+      //   if (selected.length === 0) {
+      //     alert("No candidates selected for download.");
+      //     return;
+      //   }
+      //   selected.forEach(async (candidate, idx) => {
+      //     // Robust resume extraction (same as handleDownloadCV)
+      //     let user =
+      //       candidate.userId && typeof candidate.userId === "object"
+      //         ? candidate.userId
+      //         : undefined;
+      //     let resumeUrl =
+      //       candidate.profile?.resume?.url ||
+      //       "";
+      //     if (!resumeUrl) return;
+      //     if (!resumeUrl.startsWith("http")) {
+      //       resumeUrl = `${process.env.NEXT_PUBLIC_API_URL}${resumeUrl}`;
+      //     }
+      //     try {
+      //       const headers = {};
+      //       if (token) {
+      //         headers["Authorization"] = `Bearer ${token}`;
+      //       }
+      //       const response = await fetch(resumeUrl, { method: "GET", headers });
+      //       if (!response.ok) throw new Error("Failed to download resume");
+      //       const blob = await response.blob();
+      //       const url = window.URL.createObjectURL(blob);
+      //       const a = document.createElement("a");
+      //       a.href = url;
+      //       // Use candidate name or fallback for filename
+      //       let filename =
+      //         resumeUrl.split("/").pop() || `resume_${idx + 1}.pdf`;
+      //       if (user?.name) {
+      //         filename = user.name.replace(/\s+/g, "_") + "_resume.pdf";
+      //       } else if (candidate.name) {
+      //         filename = candidate.name.replace(/\s+/g, "_") + "_resume.pdf";
+      //       } else if (candidate.id || candidate._id) {
+      //         filename = `resume_${candidate.id || candidate._id}.pdf`;
+      //       }
+      //       a.download = filename;
+      //       document.body.appendChild(a);
+      //       a.click();
+      //       a.remove();
+      //       window.URL.revokeObjectURL(url);
+      //     } catch (err) {
+      //       // Optionally show error for this candidate
+      //     }
+      //   });
+      //   break;
+      // }
       case "download": {
         const selected = filteredCandidates.filter((c) =>
-          selectedCandidates.includes(c.id)
+          selectedCandidates.length > 0
+            ? selectedCandidates.includes(c._id || c.id)
+            : true
         );
+
         if (selected.length === 0) {
           alert("No candidates selected for download.");
           return;
         }
-        selected.forEach(async (candidate, idx) => {
-          // Robust resume extraction (same as handleDownloadCV)
-          let user = candidate.userId && typeof candidate.userId === 'object' ? candidate.userId : undefined;
-          let resumeUrl =
-            candidate.profile?.resume?.url ||
-            // candidate.profile?.resume ||
-            // candidate.profile?.resumeUrl ||
-            // candidate.resume ||
-            // user?.profile?.resumeUrl ||
-            // user?.resume ||
-            "";
-          if (!resumeUrl) return;
-          if (!resumeUrl.startsWith("http")) {
-            resumeUrl = `${process.env.NEXT_PUBLIC_API_URL}${resumeUrl}`;
-          }
-          try {
-            const headers = {};
-            if (token) {
-              headers["Authorization"] = `Bearer ${token}`;
-            }
-            const response = await fetch(resumeUrl, { method: "GET", headers });
-            if (!response.ok) throw new Error("Failed to download resume");
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            // Use candidate name or fallback for filename
-            let filename = resumeUrl.split("/").pop() || `resume_${idx + 1}.pdf`;
-            if (user?.name) {
-              filename = user.name.replace(/\s+/g, "_") + "_resume.pdf";
-            } else if (candidate.name) {
-              filename = candidate.name.replace(/\s+/g, "_") + "_resume.pdf";
-            } else if (candidate.id || candidate._id) {
-              filename = `resume_${candidate.id || candidate._id}.pdf`;
-            }
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
-          } catch (err) {
-            // Optionally show error for this candidate
+
+        // Check which candidates have resumes
+        const candidatesWithResumes = [];
+        const candidatesWithoutResumes = [];
+
+        selected.forEach((candidate) => {
+          const user =
+            candidate.userId && typeof candidate.userId === "object"
+              ? candidate.userId
+              : undefined;
+          const resumeUrl = candidate.profile?.resume?.url || "";
+
+          if (resumeUrl) {
+            candidatesWithResumes.push({
+              candidate,
+              user,
+              resumeUrl,
+            });
+          } else {
+            candidatesWithoutResumes.push(candidate);
           }
         });
+
+        // Prepare alert message
+        let alertMessage;
+        if (candidatesWithResumes.length === 0) {
+          const namesWithoutResumes = candidatesWithoutResumes
+            .map((c) => c.name || c.email || "Unknown candidate")
+            .join(", ");
+
+          alertMessage =
+            `${candidatesWithoutResumes.length} candidate(s) don't have CVs uploaded:\n\n` +
+            `${namesWithoutResumes}\n\n` +
+            `No CVs available for download.`;
+          alert(alertMessage);
+          return; // Exit early since there's nothing to download
+        } else if (candidatesWithoutResumes.length > 0) {
+          const namesWithoutResumes = candidatesWithoutResumes
+            .map((c) => c.name || c.email || "Unknown candidate")
+            .join(", ");
+
+          alertMessage =
+            `${candidatesWithoutResumes.length} candidate(s) don't have CVs uploaded:\n\n` +
+            `${namesWithoutResumes}\n\n` +
+            `Proceeding to download ${candidatesWithResumes.length} available CV(s)...`;
+        } else {
+          alertMessage = `Proceeding to download ${candidatesWithResumes.length} candidate CV(s)...`;
+        }
+
+        // Show alert
+        alert(alertMessage);
+
+        // Download available resumes
+        candidatesWithResumes.forEach(
+          async ({ candidate, user, resumeUrl }, idx) => {
+            try {
+              if (!resumeUrl.startsWith("http")) {
+                resumeUrl = `${process.env.NEXT_PUBLIC_API_URL}${resumeUrl}`;
+              }
+
+              const headers = {};
+              if (token) {
+                headers["Authorization"] = `Bearer ${token}`;
+              }
+
+              const response = await fetch(resumeUrl, {
+                method: "GET",
+                headers,
+              });
+              if (!response.ok) throw new Error("Failed to download resume");
+
+              const blob = await response.blob();
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+
+              let filename =
+                resumeUrl.split("/").pop() || `resume_${idx + 1}.pdf`;
+              if (user?.name) {
+                filename = user.name.replace(/\s+/g, "_") + "_resume.pdf";
+              } else if (candidate.name) {
+                filename = candidate.name.replace(/\s+/g, "_") + "_resume.pdf";
+              } else if (candidate.id || candidate._id) {
+                filename = `resume_${candidate.id || candidate._id}.pdf`;
+              }
+
+              a.download = filename;
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+              window.URL.revokeObjectURL(url);
+            } catch (err) {
+              console.error(
+                `Error downloading CV for candidate ${
+                  candidate._id || candidate.id
+                }`,
+                err
+              );
+            }
+          }
+        );
+
         break;
       }
       case "shortlist":
@@ -396,7 +517,10 @@ export default function AdvancedCandidateSearch() {
   // Download CV handler
   const handleDownloadCV = async (candidate) => {
     // Prefer userId.profile.resumeUrl, then userId.resume, then candidate.resume, then candidate.profile.resumeUrl
-    let user = candidate.userId && typeof candidate.userId === 'object' ? candidate.userId : undefined;
+    let user =
+      candidate.userId && typeof candidate.userId === "object"
+        ? candidate.userId
+        : undefined;
     let resumeUrl =
       // user?.profile?.resumeUrl ||
       // user?.resume ||
@@ -451,6 +575,46 @@ export default function AdvancedCandidateSearch() {
       alert("Error downloading resume.");
       console.error("[DownloadCV] Error:", err);
     }
+  };
+
+  const SkillsPopup = () => {
+    if (!showSkillsPopup || !selectedCandidate) return null;
+
+    return (
+      <div className="fixed inset-0 flex items-center justify-center z-100">
+        {/* Transparent overlay with click-to-close */}
+        <div
+          className="absolute inset-0 bg-transperent bg-opacity-30"
+          onClick={() => setShowSkillsPopup(false)}
+        />
+
+        {/* Transparent popup container with border */}
+        <div className="relative bg-white bg-opacity-90 backdrop-blur-sm p-6 rounded-lg w-96 border-2 border-gray-300 shadow-lg">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-800">All Skills</h3>
+            <button
+              onClick={() => setShowSkillsPopup(false)}
+              className="text-gray-600 hover:text-gray-900 transition-colors cursor-pointer"
+            >
+              <FiX className="h-6 w-6" />
+            </button>
+          </div>
+
+          <div className="max-h-96 overflow-y-auto pr-2">
+            <div className="flex flex-wrap gap-2">
+              {selectedCandidate.profile.skills.map((skill, i) => (
+                <span
+                  key={i}
+                  className="px-3 py-1.5 text-sm rounded-full bg-blue-100 bg-opacity-70 text-blue-800 hover:bg-blue-200 transition-colors"
+                >
+                  {skill.name}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -596,9 +760,8 @@ export default function AdvancedCandidateSearch() {
                     <input
                       type="checkbox"
                       checked={
-                        selectedCandidates.length ===
-                          filteredCandidates.length &&
-                        filteredCandidates.length > 0
+                        selectedCandidates.length > 0 &&
+                        selectedCandidates.length === filteredCandidates.length
                       }
                       onChange={toggleSelectAll}
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
@@ -657,8 +820,12 @@ export default function AdvancedCandidateSearch() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <input
                           type="checkbox"
-                          checked={selectedCandidates.includes(candidate.id)}
-                          onChange={() => handleSelectCandidate(candidate.id)}
+                          checked={selectedCandidates.includes(
+                            candidate._id || candidate.id
+                          )}
+                          onChange={() =>
+                            handleSelectCandidate(candidate._id || candidate.id)
+                          }
                           className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                         />
                       </td>
@@ -692,28 +859,36 @@ export default function AdvancedCandidateSearch() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         {/* Experience: show total years or summary */}
                         {Array.isArray(user.profile.experience) &&
-                        user.profile.experience.length > 0
-                          ? `${user.profile.experience.reduce(
-                              (sum, exp) => sum + (exp.years || 0),
-                              0
-                            )} yrs 
+                        user.profile.experience.length > 0 ? (
+                          `${user.profile.experience.reduce(
+                            (sum, exp) => sum + (exp.years || 0),
+                            0
+                          )} yrs 
                             (${
                               user.profile.experience[0].title ||
                               user.profile.experience[0].role ||
                               ""
                             })`
-                          : "N/A"}
+                        ) : (
+                          <span className="px-2 py-1 text-xs text-gray-500 italic">
+                            N/A
+                          </span>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {/* Highest Qualification: show first or highest degree */}
                         {Array.isArray(user.profile.education) &&
-                        user.profile.education.length > 0
-                          ? `${user.profile.education[0].degree || ""} ${
-                              user.profile.education[0].field
-                                ? `- ${user.profile.education[0].field}`
-                                : ""
-                            }`
-                          : "N/A"}
+                        user.profile.education.length > 0 ? (
+                          `${user.profile.education[0].degree || ""} ${
+                            user.profile.education[0].field
+                              ? `- ${user.profile.education[0].field}`
+                              : ""
+                          }`
+                        ) : (
+                          <span className="px-2 py-1 text-xs text-gray-500 italic">
+                            N/A
+                          </span>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
@@ -731,20 +906,40 @@ export default function AdvancedCandidateSearch() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex flex-wrap gap-1">
-                          {user.profile.skills?.slice(0, 3).map((skill, i) => (
-                            <span
-                              key={i}
-                              className="px-2 py-1 text-xs rounded-full bg-blue-50 text-blue-700"
-                            >
-                              {skill.name}
-                            </span>
-                          ))}
-                          {user.skills?.length > 3 && (
-                            <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">
-                              +{user.skills.length - 3} more
+                          {user.profile.skills?.length > 0 ? (
+                            <>
+                              {user.profile.skills
+                                .slice(0, 3)
+                                .map((skill, i) => (
+                                  <span
+                                    key={i}
+                                    className="px-2 py-1 text-xs rounded-full bg-blue-50 text-blue-700"
+                                  >
+                                    {skill.name}
+                                  </span>
+                                ))}
+                              {user.profile.skills.length > 3 && (
+                                // <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">
+                                //   +{user.profile.skills.length - 3} more
+                                // </span>
+                                <button
+                                  onClick={() => {
+                                    setSelectedCandidate(candidate);
+                                    setShowSkillsPopup(true);
+                                  }}
+                                  className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800 hover:bg-gray-200 cursor-pointer"
+                                >
+                                  +{candidate.profile.skills.length - 3} more
+                                </button>
+                              )}
+                            </>
+                          ) : (
+                            <span className="px-2 py-1 text-xs text-gray-400 italic">
+                              N/A
                             </span>
                           )}
                         </div>
+                        <SkillsPopup />
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button
@@ -816,16 +1011,20 @@ export default function AdvancedCandidateSearch() {
                     <span>
                       {/* Experience: show total years or summary */}
                       {Array.isArray(candidate.profile.experience) &&
-                      candidate.profile.experience.length > 0
-                        ? `${candidate.profile.experience.reduce(
-                            (sum, exp) => sum + (exp.years || 0),
-                            0
-                          )} yrs (${
-                            candidate.profile.experience[0].title ||
-                            candidate.profile.experience[0].role ||
-                            ""
-                          })`
-                        : "N/A"}
+                      candidate.profile.experience.length > 0 ? (
+                        `${candidate.profile.experience.reduce(
+                          (sum, exp) => sum + (exp.years || 0),
+                          0
+                        )} yrs (${
+                          candidate.profile.experience[0].title ||
+                          candidate.profile.experience[0].role ||
+                          ""
+                        })`
+                      ) : (
+                        <span className="px-2 py-1 text-xs text-gray-500 italic">
+                          N/A
+                        </span>
+                      )}
                     </span>
                   </div>
 
@@ -834,13 +1033,17 @@ export default function AdvancedCandidateSearch() {
                     <span>
                       {/* Highest Qualification: show first or highest degree */}
                       {Array.isArray(candidate.profile.education) &&
-                      candidate.profile.education.length > 0
-                        ? `${candidate.profile.education[0].degree || ""} ${
-                            candidate.profile.education[0].field
-                              ? `- ${candidate.profile.education[0].field}`
-                              : ""
-                          }`
-                        : "N/A"}
+                      candidate.profile.education.length > 0 ? (
+                        `${candidate.profile.education[0].degree || ""} ${
+                          candidate.profile.education[0].field
+                            ? `- ${candidate.profile.education[0].field}`
+                            : ""
+                        }`
+                      ) : (
+                        <span className="px-2 py-1 text-xs text-gray-500 italic">
+                          N/A
+                        </span>
+                      )}
                     </span>
                   </div>
 
@@ -849,31 +1052,58 @@ export default function AdvancedCandidateSearch() {
                       Top Skills
                     </h4>
                     <div className="flex flex-wrap gap-1">
-                      {candidate.profile.skills?.slice(0, 5).map((skill, i) => (
-                        <span
-                          key={i}
-                          className="px-2 py-1 text-xs rounded-full bg-blue-50 text-blue-700"
-                        >
-                          {skill.name}
+                      {candidate.profile.skills?.length > 0 ? (
+                        <>
+                          {candidate.profile.skills
+                            .slice(0, 3)
+                            .map((skill, i) => (
+                              <span
+                                key={i}
+                                className="px-2 py-1 text-xs rounded-full bg-blue-50 text-blue-700"
+                              >
+                                {skill.name}
+                              </span>
+                            ))}
+                          {candidate.profile.skills.length > 3 && (
+                            <button
+                              onClick={() => {
+                                setSelectedCandidate(candidate);
+                                setShowSkillsPopup(true);
+                              }}
+                              className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800 hover:bg-gray-200 cursor-pointer"
+                            >
+                              +{candidate.profile.skills.length - 3} more
+                            </button>
+                          )}
+                        </>
+                      ) : (
+                        <span className="px-2 py-1 text-xs text-gray-500 italic">
+                          N/A
                         </span>
-                      ))}
+                      )}
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-gray-200 flex justify-between">
+                <SkillsPopup />
+
+                <div className="mt-4 pt-4 border-t border-gray-200 flex justify-between">
                   <button
-                    onClick={() => handleSelectCandidate(candidate.id)}
-                    className={`px-3 py-1 text-sm rounded-md flex items-center ${
-                      selectedCandidates.includes(candidate.id)
+                    onClick={() =>
+                      handleSelectCandidate(candidate._id || candidate.id)
+                    }
+                    className={`px-3 py-1 text-sm rounded-md flex items-center cursor-pointer ${
+                      selectedCandidates.includes(candidate._id || candidate.id)
                         ? "bg-blue-600 text-white"
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
-                    {selectedCandidates.includes(candidate.id) ? (
+                    {selectedCandidates.includes(
+                      candidate._id || candidate.id
+                    ) ? (
                       <FiCheck className="mr-1" />
                     ) : (
-                      <FiCheck className="mr-1 opacity-0" />
+                      ""
                     )}
                     Select
                   </button>
