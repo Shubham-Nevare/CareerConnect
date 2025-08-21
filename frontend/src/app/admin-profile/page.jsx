@@ -15,6 +15,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 const AdminProfile = () => {
   const { user, token, logout } = useAuth();
   const router = useRouter();
+  useEffect(() => {
+    // If no valid user or token, redirect to login
+    if (!user || !token || user.role !== "admin") {
+      router.replace("/login");
+    }
+  }, [user, token, router]);
   const [profile, setProfile] = useState({
     name: '',
     email: '',

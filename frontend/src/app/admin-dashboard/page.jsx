@@ -15,6 +15,7 @@ import {
 } from "react-icons/fi";
 import { useAuth } from "../components/AuthProvider";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 // Helper function to format dates
 const formatDate = (dateString) => {
@@ -39,6 +40,15 @@ const AdminDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    // If no valid user or token, redirect to login
+    if (!user || !token || user.role !== "admin") {
+      router.replace("/login");
+    }
+  }, [user, token, router]);
 
   // Define tabs after all state declarations
   const tabs = [
