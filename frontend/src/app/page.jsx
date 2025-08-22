@@ -24,7 +24,7 @@ export default function HomePage() {
           `${process.env.NEXT_PUBLIC_API_URL}/jobs?status=active&limit=4&sort=-createdAt`
         );
         const data = await res.json();
-        console.log("Fetched jobs:", data);
+        // console.log("Fetched jobs:", data);
         // If API doesn't support limit/sort, do it here:
         let jobs = Array.isArray(data) ? data : data.jobs || [];
         jobs = jobs.filter((job) => job.status === "active");

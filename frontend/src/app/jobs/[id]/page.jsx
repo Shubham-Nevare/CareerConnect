@@ -306,12 +306,20 @@ export default function JobDetailsPage() {
                     </div>
                     {/* Mobile: title and company/location */}
                     <div className="sm:hidden">
-                      <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                        {job.title}
-                      </h1>
-                      <div className="flex items-center text-gray-600 mb-4">
-                        <span className="mr-4">{job.company?.name}</span>
-                        <span>{job.location}</span>
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <h1 className="text-2xl font-bold text-gray-900 truncate max-w-[70%]">
+                          {job.title}
+                        </h1>
+                        <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ml-2">{job.type}</span>
+                      </div>
+                      <div className="flex flex-wrap items-center text-gray-600 mb-4 text-sm gap-x-2 gap-y-1">
+                        <span className="truncate max-w-[60%]">{job.company?.name}</span>
+                        <span className="truncate">{job.location}</span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-base mt-2">
+                        <span className="font-semibold text-gray-900">{job.salary} LPA</span>
+                        <span className="font-semibold text-gray-900">{job.experience}</span>
+                        <span className="text-xs text-gray-500">Posted {new Date(job.createdAt).toLocaleString(undefined, { year: "numeric", month: "2-digit", day: "2-digit", hour: "numeric", minute: "2-digit", hour12: true })}</span>
                       </div>
                     </div>
                   </div>

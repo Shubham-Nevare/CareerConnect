@@ -527,7 +527,7 @@ export default function RecruiterProfile() {
                 </div>
                 
                 <div className="text-sm text-gray-700">
-                  <p className="mb-3">{company.description}</p>
+                  <p className="mb-3 whitespace-pre-line">{company.description}</p>
                   
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
