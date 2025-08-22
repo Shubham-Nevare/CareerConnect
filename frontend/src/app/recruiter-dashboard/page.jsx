@@ -497,7 +497,7 @@ export default function RecruiterDashboard() {
           </h1>
           <p className="text-gray-600 mt-1">
             Welcome back,{" "}
-            <span className="text-xl font-bold font-black">
+            <span className="text-xl font-black">
               {user?.name || "Recruiter"}
             </span>
           </p>
@@ -584,13 +584,15 @@ export default function RecruiterDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* Your Stats */}
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                          <FiBarChart2 className="mr-2 text-blue-500" />
+
               Your Performance
             </h3>
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-blue-50 p-4 rounded-lg">
+              <div className="bg-blue-100 p-4 rounded-lg">
                 <div className="flex items-center">
-                  <div className="bg-blue-100 p-2 rounded-full mr-3">
+                  <div className="bg-blue-200 p-2 rounded-full mr-3">
                     <FiBriefcase className="text-blue-500 text-xl" />
                   </div>
                   <div>
@@ -600,9 +602,9 @@ export default function RecruiterDashboard() {
                 </div>
               </div>
 
-              <div className="bg-green-50 p-4 rounded-lg">
+              <div className="bg-green-100 p-4 rounded-lg">
                 <div className="flex items-center">
-                  <div className="bg-green-100 p-2 rounded-full mr-3">
+                  <div className="bg-green-200 p-2 rounded-full mr-3">
                     <FiCheckCircle className="text-green-500 text-xl" />
                   </div>
                   <div>
@@ -624,9 +626,9 @@ export default function RecruiterDashboard() {
                 </div>
               </div>
 
-              <div className="bg-indigo-50 p-4 rounded-lg">
+              <div className="bg-indigo-100 p-4 rounded-lg">
                 <div className="flex items-center">
-                  <div className="bg-indigo-100 p-2 rounded-full mr-3">
+                  <div className="bg-indigo-200 p-2 rounded-full mr-3">
                     <FiUsers className="text-indigo-500 text-xl" />
                   </div>
                   <div>
@@ -635,10 +637,10 @@ export default function RecruiterDashboard() {
                   </div>
                 </div>
               </div>
-              <div className="bg-indigo-50 p-4 rounded-lg">
+              <div className="bg-indigo-100 p-4 rounded-lg">
                 <div className="flex items-center">
-                  <div className="bg-indigo-100 p-2 rounded-full mr-3">
-                    <FiUsers className="text-indigo-500 text-xl" />
+                  <div className="bg-indigo-200 p-2 rounded-full mr-3">
+                    <FiArchive className="text-indigo-500 text-xl" />
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Archived</p>
@@ -648,10 +650,10 @@ export default function RecruiterDashboard() {
               </div>
               <div
                 onClick={() => router.push("/recruiter-dashboard/candidates")}
-                className="bg-blue-50 p-4 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors"
+                className="bg-blue-100 p-4 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors"
               >
                 <div className="flex items-center">
-                  <div className="bg-blue-100 p-2 rounded-full mr-3">
+                  <div className="bg-blue-200 p-2 rounded-full mr-3">
                     <FiUserPlus className="text-blue-500 text-xl" />
                   </div>
                   <div>
@@ -681,9 +683,9 @@ export default function RecruiterDashboard() {
               )}
             </h3>
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="bg-gray-100 p-4 rounded-lg">
                 <div className="flex items-center">
-                  <div className="bg-gray-100 p-2 rounded-full mr-3">
+                  <div className="bg-gray-200 p-2 rounded-full mr-3">
                     <FiBriefcase className="text-gray-600 text-xl" />
                   </div>
                   <div>
@@ -693,9 +695,9 @@ export default function RecruiterDashboard() {
                 </div>
               </div>
 
-              <div className="bg-green-50 p-4 rounded-lg">
+              <div className="bg-green-100 p-4 rounded-lg">
                 <div className="flex items-center">
-                  <div className="bg-green-100 p-2 rounded-full mr-3">
+                  <div className="bg-green-200 p-2 rounded-full mr-3">
                     <FiCheckCircle className="text-green-500 text-xl" />
                   </div>
                   <div>
@@ -705,9 +707,9 @@ export default function RecruiterDashboard() {
                 </div>
               </div>
 
-              <div className="bg-purple-50 p-4 rounded-lg">
+              <div className="bg-purple-100 p-4 rounded-lg">
                 <div className="flex items-center">
-                  <div className="bg-purple-100 p-2 rounded-full mr-3">
+                  <div className="bg-purple-200 p-2 rounded-full mr-3">
                     <FiUsers className="text-purple-500 text-xl" />
                   </div>
                   <div>
