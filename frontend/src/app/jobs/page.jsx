@@ -434,14 +434,17 @@ export default function JobsPage() {
                                 <span className="font-medium">
                                   Description:
                                 </span>{" "}
-                                <span>
+                                {/* <span>
                                   {job.description
                                     .split(" ")
-                                    .slice(0, 23)
+                                    .slice(0, 25)
                                     .join(" ")}
-                                  {job.description.split(" ").length > 23
+                                  {job.description.split(" ").length > 25
                                     ? "..."
                                     : ""}
+                                </span> */}
+                                <span className="line-clamp-2">
+                                  {job.description}
                                 </span>
                               </div>
                             )}

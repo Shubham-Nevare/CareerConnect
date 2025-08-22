@@ -155,13 +155,8 @@ export default function CompaniesPage() {
                               {(company.jobs?.length || company.jobs || 0)} open jobs
                             </div>
                           </div>
-                          <p className="mt-3 text-sm text-gray-600 whitespace-pre-wrap">
-                            {(() => {
-                              if (!company.description) return '';
-                              const words = company.description.split(/\s+/);
-                              if (words.length <= 30) return company.description;
-                              return words.slice(0, 38).join(' ') + '...';
-                            })()}
+                          <p className="mt-3 text-sm text-gray-600 whitespace-pre-wrap line-clamp-4">
+                            {company.description || ''}
                           </p>
                           <div className="mt-4 flex space-x-3">
                             <Link

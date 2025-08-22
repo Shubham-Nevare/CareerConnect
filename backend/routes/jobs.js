@@ -71,13 +71,13 @@ router.get('/', async(req, res) => {
     // Add salary range filter if provided
     if (req.query.salary) {
         if (req.query.salary === 'below-3') {
-            query.salary = { $lt: 300000 }; // Below 3 LPA
+            query.salary = { $lt: 3 }; // Below 3 LPA
         } else if (req.query.salary === '3-6') {
-            query.salary = { $gte: 300000, $lt: 600000 }; // 3-6 LPA
+            query.salary = { $gte: 3, $lt: 6 }; // 3-6 LPA
         } else if (req.query.salary === '6-10') {
-            query.salary = { $gte: 600000, $lt: 1000000 }; // 6-10 LPA
+            query.salary = { $gte: 600000, $lt: 10 }; // 6-10 LPA
         } else if (req.query.salary === '10-plus') {
-            query.salary = { $gte: 1000000 }; // 10+ LPA
+            query.salary = { $gte: 10 }; // 10+ LPA
         }
     }
     // Note: The frontend sends a 'status' param, but we are intentionally overriding it

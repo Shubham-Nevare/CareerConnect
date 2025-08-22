@@ -80,7 +80,9 @@ function Footer() {
                 {[
                   { href: "/jobs", text: "Browse Jobs" },
                   { href: "/companies", text: "Companies" },
-                  { href: "/career-advice", text: "Career Advice" }
+                  { href: "/career-advice", text: "Career Advice" },
+                                    { href: "/interview-tips", text: "Interview Tips" },
+
                 ].map((link, index) => (
                   <motion.li 
                     key={index}
@@ -103,7 +105,6 @@ function Footer() {
                     href: "https://www.resume-now.com/lp/rnarsmsm121?utm_source=google&utm_medium=sem&utm_campaign=20457377013&utm_term=resume%20builder&network=g&device=c&adposition=&adgroupid=152901557416&placement=&adid=687406818899&gad_source=1&gad_campaignid=20457377013&gbraid=0AAAAADEP8E5hhUW8b2BVPkNzwdU-6cyYN&gclid=Cj0KCQjws4fEBhD-ARIsACC3d2-oNG9LdGefGfD_5IOw6dCv0ZNUEpvlLN-7nPmpwcIpCIKhhNchT8gaAkA4EALw_wcB", 
                     text: "Resume Builder" 
                   },
-                  { href: "/interview-tips", text: "Interview Tips" },
                   { 
                     href: "https://www.etmoney.com/tools-and-calculators/salary-calculator", 
                     text: "Salary Calculator" 
