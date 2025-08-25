@@ -524,8 +524,9 @@ export default function RecruiterDashboard() {
         </div>
       </div>
 
+
       {/* Tab Navigation */}
-      <div className="flex border-b mb-6">
+      <div className="flex border-b mb-6 justify-center">
         <button
           onClick={() => setActiveTab("dashboard")}
           className={`px-4 py-3 text-sm font-medium flex items-center cursor-pointer ${
@@ -561,35 +562,36 @@ export default function RecruiterDashboard() {
         </button>
       </div>
 
-      {/* Stats Toggle */}
-      <div className="mb-6 flex justify-between items-center">
-        <h2 className="text-lg font-semibold text-gray-800">
-          Performance Overview
-        </h2>
-        <button
-          onClick={() => setShowStats(!showStats)}
-          className="flex items-center text-sm text-gray-500 hover:text-gray-700 cursor-pointer"
-        >
-          {showStats ? (
-            <FiChevronUp className="mr-1" />
-          ) : (
-            <FiChevronDown className="mr-1" />
-          )}
-          {showStats ? "Hide Stats" : "Show Stats"}
-        </button>
-      </div>
+      {/* Stats Toggle - Only show in Overview tab */}
+      {activeTab === "dashboard" && (
+        <div className="mb-6 flex justify-between items-center">
+          <h2 className="text-lg font-semibold text-gray-800">
+            Performance Overview
+          </h2>
+          <button
+            onClick={() => setShowStats(!showStats)}
+            className="flex items-center text-sm text-gray-500 hover:text-gray-700 cursor-pointer"
+          >
+            {showStats ? (
+              <FiChevronUp className="mr-1" />
+            ) : (
+              <FiChevronDown className="mr-1" />
+            )}
+            {showStats ? "Hide Stats" : "Show Stats"}
+          </button>
+        </div>
+      )}
 
       {/* Stats Overview - Collapsible */}
-      {showStats && (
+      {activeTab === "dashboard" && showStats && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* Your Stats */}
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                                          <FiBarChart2 className="mr-2 text-blue-500" />
-
+              <FiBarChart2 className="mr-2 text-blue-500" />
               Your Performance
             </h3>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               <div className="bg-blue-100 p-4 rounded-lg">
                 <div className="flex items-center">
                   <div className="bg-blue-200 p-2 rounded-full mr-3">
@@ -738,7 +740,7 @@ export default function RecruiterDashboard() {
 
       {/* Job Posting Form - Conditional */}
       {showJobForm && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8 w-full md:w-fit justify-self-center">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold text-gray-800 flex items-center">
               <FiPlus className="mr-2 text-blue-600" />
@@ -1093,16 +1095,18 @@ export default function RecruiterDashboard() {
                             </h4>
                           </div>
                         </div>
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs ${
-                            statusColors[applicant.status]?.bg
-                          } ${statusColors[applicant.status]?.text}`}
-                        >
-                          {applicant.status}
-                        </span>
-                        <span className="text-sm text-gray-500">
-                          {formatDate(applicant.appliedDate)}
-                        </span>
+                        <div className="gap-4 flex items-center">
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs ${
+                              statusColors[applicant.status]?.bg
+                            } ${statusColors[applicant.status]?.text}`}
+                          >
+                            {applicant.status}
+                          </span>
+                          <span className="text-sm text-gray-500">
+                            {formatDate(applicant.appliedDate)}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -1113,7 +1117,7 @@ export default function RecruiterDashboard() {
       )}
 
       {activeTab === "jobs" && (
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200 w-fit justify-center mx-auto">
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200 w-full max-w-4xl mx-auto">
           <div className="p-4 border-b border-gray-200 flex justify-between items-center">
             <h3 className="text-lg font-semibold text-gray-800">
               Your Job Postings
@@ -1148,7 +1152,7 @@ export default function RecruiterDashboard() {
               </p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-200 w-4xl max-w-4xl mx-auto">
+            <div className="divide-y divide-gray-200 w-full max-w-4xl mx-auto">
               {filteredPostedJobs
                 .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
                 .map((job) => (
@@ -1165,10 +1169,10 @@ export default function RecruiterDashboard() {
                           <h3 className="text-lg font-semibold text-gray-800 truncate max-w-lg">
                             {job.title}
                           </h3>
-                          <p className="text-gray-600 mt-1 max-w-2xl">
-                            {getFirstWords(job.description, 25)}
+                          <p className="text-gray-600 mt-1 max-w-2xl line-clamp-2">
+                            {job.description}
                           </p>
-                          <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                          <div className="mt-3 flex flex-wrap items-center gap-1 md:gap-4 text-sm text-gray-500">
                             <span>
                               <strong>Applicants:</strong>{" "}
                               {job.applicants?.length || 0}
@@ -1215,7 +1219,7 @@ export default function RecruiterDashboard() {
       )}
 
       {activeTab === "applicants" && (
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200 w-fit justify-center mx-auto">
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200 w-full max-w-3xl mx-auto">
           <div className="p-4 border-b border-gray-200 flex justify-between items-center">
             <h3 className="text-lg font-semibold text-gray-800">Applicants</h3>
             <div className="flex items-center space-x-2">
@@ -1249,7 +1253,7 @@ export default function RecruiterDashboard() {
               </p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-200 w-3xl max-w-3xl mx-auto">
+            <div className="divide-y divide-gray-200 w-full max-w-3xl mx-auto">
               {filteredApplicants
                 .sort(
                   (a, b) =>
@@ -1262,7 +1266,7 @@ export default function RecruiterDashboard() {
                     className="p-4 hover:bg-gray-50 transition-colors"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
-                      <div className="flex items-start space-x-4 flex-1 min-w-0 max-w-2xl">
+                      <div className="flex items-start gap-3 flex-1 min-w-0 max-w-2xl">
                         {applicant?.userId && applicant.userId.profilePhoto ? (
                           <img
                             src={`${applicant.userId.profilePhoto}`}
@@ -1294,7 +1298,7 @@ export default function RecruiterDashboard() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-4 justify-end">
                         <select
                           value={applicant.status}
                           onChange={(e) =>

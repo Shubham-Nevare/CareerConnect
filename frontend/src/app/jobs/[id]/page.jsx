@@ -6,8 +6,22 @@ import Head from "next/head";
 import Link from "next/link";
 import { useAuth } from "../../components/AuthProvider";
 import { useMemo } from "react";
-import { FiCalendar, FiDollarSign, FiMapPin } from "react-icons/fi";
+import {
+  FiArrowLeft,
+  FiBriefcase,
+  FiCalendar,
+  FiCheckSquare,
+  FiClock,
+  FiDollarSign,
+  FiFileText,
+  FiInfo,
+  FiList,
+  FiMapPin,
+} from "react-icons/fi";
 import CompanyOverviewCard from "./components/CompanyOverviewCard";
+import { FaRupeeSign } from "react-icons/fa";
+import { RiCurrencyRupeeLine } from "react-icons/ri"; // Alternative thinner icon
+
 
 export default function JobDetailsPage() {
   const { id } = useParams();
@@ -198,7 +212,7 @@ export default function JobDetailsPage() {
               onClick={() => router.back()}
               className="text-blue-600 hover:text-blue-800 flex items-center cursor-pointer"
             >
-              <svg
+              {/* <svg
                 className="w-5 h-5 mr-1"
                 fill="none"
                 stroke="currentColor"
@@ -210,7 +224,8 @@ export default function JobDetailsPage() {
                   strokeWidth="2"
                   d="M10 19l-7-7m0 0l7-7m-7 7h18"
                 ></path>
-              </svg>
+              </svg> */}
+              <FiArrowLeft className="w-5 h-5 mr-1" />
               Back
             </button>
           </div>
@@ -222,11 +237,11 @@ export default function JobDetailsPage() {
                 <div className="p-6 border-b border-gray-200">
                   <div className="relative">
                     {/* Mobile: job type badge absolute top right */}
-                    <div className="absolute right-0 top-0 mt-2 mr-2 sm:hidden z-10">
+                    {/* <div className="absolute right-0 top-0 mt-2 mr-2 hidden z-10">
                       <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
                         {job.type}
                       </div>
-                    </div>
+                    </div> */}
                     {/* Desktop: inline row */}
                     <div className="hidden sm:flex justify-between items-start">
                       <div>
@@ -234,7 +249,9 @@ export default function JobDetailsPage() {
                           {job.title}
                         </h1>
                         <div className="flex items-center text-gray-600 mb-4">
+                          <FiBriefcase className="mr-1.5 text-gray-500" />
                           <span className="mr-4">{job.company?.name}</span>
+                          <FiMapPin className="mr-1.5 text-gray-500" />
                           <span>{job.location}</span>
                         </div>
                       </div>
@@ -306,32 +323,61 @@ export default function JobDetailsPage() {
                     </div>
                     {/* Mobile: title and company/location */}
                     <div className="sm:hidden">
-                      <div className="flex items-center justify-between gap-2 mb-2">
-                        <h1 className="text-2xl font-bold text-gray-900 truncate max-w-[70%]">
+                      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                        <h1 className="text-2xl font-bold text-gray-900 break-words max-w-[70%] min-w-[30%]">
                           {job.title}
                         </h1>
-                        <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ml-2">{job.type}</span>
+                        <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap flex-shrink-0 mt-1">
+                          {job.type}
+                        </span>
                       </div>
                       <div className="flex flex-wrap items-center text-gray-600 mb-4 text-sm gap-x-2 gap-y-1">
-                        <span className="truncate max-w-[60%]">{job.company?.name}</span>
-                        <span className="truncate">{job.location}</span>
+                        <span className="truncate max-w-[60%] flex items-center">
+                          <FiBriefcase className="mr-1.5 text-gray-500 flex-shrink-0" />
+                          {job.company?.name}
+                        </span>
+                        <span className="truncate flex items-center">
+                          <FiMapPin className="mr-1.5 text-gray-500 flex-shrink-0" />
+                          {job.location}
+                        </span>
                       </div>
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-base mt-2">
-                        <span className="font-semibold text-gray-900">{job.salary} LPA</span>
-                        <span className="font-semibold text-gray-900">{job.experience}</span>
-                        <span className="text-xs text-gray-500">Posted {new Date(job.createdAt).toLocaleString(undefined, { year: "numeric", month: "2-digit", day: "2-digit", hour: "numeric", minute: "2-digit", hour12: true })}</span>
+                      <div className="flex flex-wrap items-center justify-between  gap-x-4 gap-y-1 text-base mt-2 ">
+                        <span className="font-semibold text-gray-900 flex items-center">
+                          <FaRupeeSign className="mr-1 text-green-600" />
+                          {job.salary} LPA
+                        </span>
+                        <span className="font-semibold text-gray-900 flex items-center">
+                          <FiClock className="mr-1 text-blue-600" />
+                          {job.experience}
+                        </span>
+                        <span className="text-xs text-gray-500 flex items-center">
+                          <FiCalendar className="mr-1" />
+                          Posted{" "}
+                          {new Date(job.createdAt).toLocaleString(undefined, {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                            hour: "numeric",
+                            minute: "2-digit",
+                            hour12: true,
+                          })}
+                        </span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between mt-2">
-                    <span className="text-lg font-semibold text-gray-900">
+                  <div className=" items-center justify-between mt-2 hidden md:flex">
+                    <span className="text-lg font-semibold text-gray-900 flex items-center">
+  <FaRupeeSign className="mr-1.5 text-green-600 opacity-80 w-4 h-4" />
                       {job.salary} LPA
                     </span>
-                    <span className="text-lg font-semibold text-gray-900">
+                    <span className="text-lg font-semibold text-gray-900 flex items-center">
+                      <FiClock className="mr-1.5 text-blue-600" />
                       {job.experience}
                     </span>
-                    <span className="text-sm text-gray-500">
-                      Posted {new Date(job.createdAt).toLocaleString(undefined, {
+                    <span className="text-sm text-gray-500 flex items-center">
+                      <FiCalendar className="mr-1.5" />
+                      Posted{" "}
+                      {new Date(job.createdAt).toLocaleString(undefined, {
                         year: "numeric",
                         month: "2-digit",
                         day: "2-digit",
@@ -406,12 +452,15 @@ export default function JobDetailsPage() {
                 </div>
 
                 <div className="p-6">
-                  <h2 className="text-xl font-semibold mb-4">
+                  <h2 className="text-xl font-semibold mb-4 flex items-center">
+                    <FiFileText className="mr-2 text-blue-600" />
                     Job Description
                   </h2>
-                  <p className="text-gray-700 mb-6 whitespace-pre-line">{job.description}</p>
-
-                  <h3 className="text-lg font-semibold mb-3">
+                  <p className="text-gray-700 mb-6 whitespace-pre-line">
+                    {job.description}
+                  </p>
+                  <h3 className="text-lg font-semibold mb-3 flex items-center">
+                    <FiList className="mr-2 text-green-600" />
                     Responsibilities
                   </h3>
                   {Array.isArray(job.responsibilities) &&
@@ -422,8 +471,10 @@ export default function JobDetailsPage() {
                         ))}
                       </ul>
                     )}
-
-                  <h3 className="text-lg font-semibold mb-3">Requirements</h3>
+                  <h3 className="text-lg font-semibold mb-3 flex items-center">
+                    <FiCheckSquare className="mr-2 text-purple-600" />
+                    Requirements
+                  </h3>{" "}
                   {Array.isArray(job.requirements) &&
                     job.requirements.length > 0 && (
                       <ul className="list-disc pl-5 mb-6 space-y-2 text-gray-700">
@@ -432,10 +483,12 @@ export default function JobDetailsPage() {
                         ))}
                       </ul>
                     )}
-
                   {Array.isArray(job.benefits) && job.benefits.length > 0 && (
                     <>
-                      <h3 className="text-lg font-semibold mb-3">Benefits</h3>
+                      <h3 className="text-lg font-semibold mb-3 flex items-center">
+                        <FiGift className="mr-2 text-yellow-600" />
+                        Benefits
+                      </h3>{" "}
                       <ul className="list-disc pl-5 mb-6 space-y-2 text-gray-700">
                         {job.benefits.map((item, i) => (
                           <li key={i}>{item}</li>
@@ -443,11 +496,13 @@ export default function JobDetailsPage() {
                       </ul>
                     </>
                   )}
-
-                  <h3 className="text-lg font-semibold mb-3">
+                  <h3 className="text-lg font-semibold mb-3 flex items-center">
+                    <FiInfo className="mr-2 text-gray-600" />
                     About {job?.company?.name}
                   </h3>
-                  <p className="text-gray-700 whitespace-pre-line">{job?.company?.description}</p>
+                  <p className="text-gray-700 whitespace-pre-line">
+                    {job?.company?.description}
+                  </p>
                 </div>
               </div>
 
@@ -457,8 +512,12 @@ export default function JobDetailsPage() {
                 <div className="grid sm:grid-cols-2 gap-4">
                   {similarJobs.map((job) => (
                     <div key={job._id} className="bg-white p-4 rounded shadow">
-                      <h3 className="font-semibold">{job.title}</h3>
-                      <p>
+                      <h3 className="font-semibold flex items-center">
+                        <FiBriefcase className="mr-2 text-blue-600" />
+                        {job.title}
+                      </h3>
+                      <p className="flex items-center mt-1">
+                        <FiMapPin className="mr-2 text-gray-500" />
                         {job.company?.name} • {job.location}
                       </p>
                       <Link

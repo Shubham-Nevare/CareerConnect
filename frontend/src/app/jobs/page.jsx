@@ -459,7 +459,7 @@ export default function JobsPage() {
                             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-center flex items-center justify-center w-full md:w-[120px] md:h-[38px]"
                             style={{
                               fontSize: "16px",
-                              lineHeight: "28px",
+                              lineHeight: "36px",
                               padding: 0,
                             }}
                           >

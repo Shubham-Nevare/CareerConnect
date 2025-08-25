@@ -6,6 +6,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Head from "next/head";
 import Link from "next/link";
 import { useAuth } from "./components/AuthProvider";
+import { FiAward, FiBriefcase, FiClock, FiMapPin } from "react-icons/fi";
+import { FaRupeeSign } from "react-icons/fa";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -14,7 +16,7 @@ export default function HomePage() {
   const [latestJobs, setLatestJobs] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [location, setLocation] = useState("");
-  const router = require('next/navigation').useRouter();
+  const router = require("next/navigation").useRouter();
 
   useEffect(() => {
     // Fetch jobs from API, filter active, sort by createdAt desc, take 4
@@ -101,9 +103,9 @@ export default function HomePage() {
   const handleSearch = (e) => {
     e.preventDefault();
     const params = new URLSearchParams();
-    if (searchTerm) params.append('q', searchTerm);
-    if (location) params.append('location', location);
-    router.push(`/jobs${params.toString() ? `?${params.toString()}` : ''}`);
+    if (searchTerm) params.append("q", searchTerm);
+    if (location) params.append("location", location);
+    router.push(`/jobs${params.toString() ? `?${params.toString()}` : ""}`);
   };
 
   return (
@@ -153,7 +155,7 @@ export default function HomePage() {
                 <input
                   type="text"
                   value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full px-5 py-3 md:py-4 rounded-lg bg-white/20 placeholder-white/80 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 text-white text-sm md:text-base transition-all"
                   placeholder="Job title, keywords, or company"
                 />
@@ -176,7 +178,7 @@ export default function HomePage() {
                 <select
                   className="w-full px-4 py-3 md:py-4 bg-white/20 text-white border-0 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 rounded-lg appearance-none text-sm md:text-base"
                   value={location}
-                  onChange={e => setLocation(e.target.value)}
+                  onChange={(e) => setLocation(e.target.value)}
                 >
                   <option value="" className="bg-gray-800 text-white">
                     All Locations
@@ -334,25 +336,39 @@ export default function HomePage() {
                         )}
                       </div>
                       <div className="mr-[6px]">
-                        <h3 className="font-bold text-lg hover:text-blue-600 transition cursor-pointer">
+                        <h3 className="font-bold text-lg hover:text-blue-600 transition cursor-pointer flex items-center">
+                          <FiBriefcase className="mr-2 text-blue-600" />
+
                           {job.title}
                         </h3>
-                        <p className="text-gray-700">
-                          {job.company?.name || job.company || ""} •{" "}
-                          {job.location}
-                        </p>
+                        <div className="flex items-center flex-wrap gap-2 mt-1">
+                          <span className="text-gray-700 flex items-center">
+                            <FiBriefcase className="mr-1 text-gray-500 flex-shrink-0" />
+                            {job.company?.name || job.company || ""}
+                          </span>
+                          <span className="text-gray-700 flex items-center">
+                            <FiMapPin className="mr-1 text-gray-500 flex-shrink-0" />
+                            {job.location}
+                          </span>
+                        </div>
                         <div className="flex flex-wrap gap-2 mt-2">
-                          <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                          <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex items-center">
+                            <FiClock className="mr-1" />
                             {job.type}
                           </span>
-                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded flex items-center">
+                            <FaRupeeSign className="mr-1 text-[10px] opacity-80" />
                             {job.salary} LPA
                           </span>
-                          {job.experience && (
+                          {/* {job.experience && (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 ml-2">
                               {job.experience}
                             </span>
-                          )}
+                          )} */}
+                          <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex items-center">
+                            <FiAward className="mr-1" />
+                            {job.experience}
+                          </span>
                           {/* {Array.isArray(job.requirements) &&
                             job.requirements.length > 0 &&
                             job.requirements.map((requirements, i) => (
@@ -363,21 +379,13 @@ export default function HomePage() {
                                 {requirements}
                               </span>
                             ))} */}
-                            {job.description && (
-                              <div className="text-gray-700 text-sm mt-2">
-                                <span className="font-medium">Description:</span>{" "}
-                                <span>
-                                  {
-                                    job.description
-                                      .split(" ")
-                                      .slice(0, 23)
-                                      .join(" ")
-                                  }
-                                  {job.description.split(" ").length > 23 ? "..." : ""}
-                                </span>
-                              </div>
-                            )}
                         </div>
+                        {job.description && (
+                          <div className="text-gray-700 text-sm line-clamp-2 mt-1">
+                            <span className="font-medium">Description:</span>{" "}
+                            {job.description}
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div className="flex flex-col items-start md:items-end space-y-2">

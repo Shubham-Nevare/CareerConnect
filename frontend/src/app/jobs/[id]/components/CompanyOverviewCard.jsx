@@ -88,16 +88,21 @@ export default function CompanyOverviewCard({ job }) {
             </p>
           </div>
 
+
           <div>
             <h3 className="text-sm font-medium text-gray-500 mb-1">Job Type</h3>
-            <p className="capitalize">{job.type || "Not specified"}</p>
+            <p className="flex items-center capitalize">
+              <FiBriefcase className="text-gray-500 mr-2" />
+              {job.type || "Not specified"}
+            </p>
           </div>
 
           <div>
-            <h3 className="text-sm font-medium text-gray-500 mb-1">
-              Experience Level
-            </h3>
-            <p className="capitalize">{job.experience || "Not specified"}</p>
+            <h3 className="text-sm font-medium text-gray-500 mb-1">Experience Level</h3>
+            <p className="flex items-center capitalize">
+              <FiUsers className="text-gray-500 mr-2" />
+              {job.experience || "Not specified"}
+            </p>
           </div>
 
           {job.salary && (
